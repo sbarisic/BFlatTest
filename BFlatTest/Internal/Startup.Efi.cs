@@ -331,71 +331,72 @@ namespace Internal.Runtime.CompilerHelpers
 		public readonly delegate* unmanaged<uint, EFI_TPL, delegate* unmanaged<EFI_EVENT, void*, void>, void*, EFI_GUID*, EFI_EVENT*, ulong> CreateEventEx;
 	}
 
-	/* TODO: Translate to C#
-	
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_GRAPHICS_OUTPUT_PROTOCOL_QUERY_MODE) (
- IN EFI_GRAPHICS_OUTPUT_PROTOCOL              *This,
- IN UINT32                                    ModeNumber,
- OUT UINTN                                    *SizeOfInfo
- OUT EFI_GRAPHICS_OUTPUT_MODE_INFORMATION     **Info
- );
+	public enum EFI_GRAPHICS_PIXEL_FORMAT
+	{
+		PixelRedGreenBlueReserved8BitPerColor,
+		PixelBlueGreenRedReserved8BitPerColor,
+		PixelBitMask,
+		PixelBltOnly,
+		PixelFormatMax
+	}
 
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_GRAPHICS_OUTPUT_PROTOCOL_SET_MODE) (
- IN EFI_GRAPHICS_OUTPUT_PROTOCOL                *This,
- IN UINT32                                      ModeNumber
- );
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_PIXEL_BITMASK
+	{
+		public uint RedMask;
+		public uint GreenMask;
+		public uint BlueMask;
+		public uint ReservedMask;
+	}
 
-	typedef struct {
- UINT8                        Blue;
- UINT8                        Green;
- UINT8                        Red;
- UINT8                        Reserved;
-} EFI_GRAPHICS_OUTPUT_BLT_PIXEL;
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_GRAPHICS_OUTPUT_MODE_INFORMATION
+	{
+		public uint Version;
+		public uint HorizontalResolution;
+		public uint VerticalResolution;
+		public EFI_GRAPHICS_PIXEL_FORMAT PixelFormat;
+		public EFI_PIXEL_BITMASK PixelInformation;
+		public uint PixelsPerScanLine;
+	}
 
-typedef enum {
- EfiBltVideoFill,
- EfiBltVideoToBltBuffer,
- EfiBltBufferToVideo,
- EfiBltVideoToVideo,
- EfiGraphicsOutputBltOperationMax
-} EFI_GRAPHICS_OUTPUT_BLT_OPERATION;
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_GRAPHICS_OUTPUT_BLT_PIXEL
+	{
+		public byte Blue;
+		public byte Green;
+		public byte Red;
+		public byte Reserved;
+	}
 
-typedef
-EFI_STATUS
-(EFIAPI *EFI_GRAPHICS_OUTPUT_PROTOCOL_BLT) (
- IN EFI_GRAPHICS_OUTPUT_PROTOCOL                 *This,
- IN OUT EFI_GRAPHICS_OUTPUT_BLT_PIXEL            *BltBuffer, OPTIONAL
- IN EFI_GRAPHICS_OUTPUT_BLT_OPERATION            BltOperation,
- IN UINTN                                        SourceX,
- IN UINTN                                        SourceY,
- IN UINTN                                        DestinationX,
- IN UINTN                                        DestinationY,
- IN UINTN                                        Width,
- IN UINTN                                        Height,
- IN UINTN                                        Delta OPTIONAL
- );
+	public enum EFI_GRAPHICS_OUTPUT_BLT_OPERATION
+	{
+		EfiBltVideoFill,
+		EfiBltVideoToBltBuffer,
+		EfiBltBufferToVideo,
+		EfiBltVideoToVideo,
+		EfiGraphicsOutputBltOperationMax
+	}
 
-	typedef struct {
-  UINT32                                    MaxMode;
-  UINT32                                    Mode;
-  EFI_GRAPHICS_OUTPUT_MODE_INFORMATION      *Info;
- UINTN                                      SizeOfInfo;
-  EFI_PHYSICAL_ADDRESS                      FrameBufferBase;
-  UINTN                                     FrameBufferSize;
+	[StructLayout(LayoutKind.Sequential)]
+	public unsafe struct EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE
+	{
+		public uint MaxMode;
+		public uint Mode;
+		public EFI_GRAPHICS_OUTPUT_MODE_INFORMATION* Info;
+		public nuint SizeOfInfo;
+		public EFI_PHYSICAL_ADDRESS FrameBufferBase;
+		public nuint FrameBufferSize;
+	}
 
-} EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE;
-
-	  typedef struct EFI_GRAPHICS_OUTPUT_PROTCOL {
- EFI_GRAPHICS_OUTPUT_PROTOCOL_QUERY_MODE     QueryMode;
- EFI_GRAPHICS_OUTPUT_PROTOCOL_SET_MODE       SetMode;
- EFI_GRAPHICS_OUTPUT_PROTOCOL_BLT            Blt;
- EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE           *Mode;
-} EFI_GRAPHICS_OUTPUT_PROTOCOL;
-	*/
+	[StructLayout(LayoutKind.Sequential)]
+	public unsafe readonly struct EFI_GRAPHICS_OUTPUT_PROTOCOL
+	{
+		public readonly delegate* unmanaged<EFI_GRAPHICS_OUTPUT_PROTOCOL*, uint, nuint*, EFI_GRAPHICS_OUTPUT_MODE_INFORMATION**, ulong> QueryMode;
+		public readonly delegate* unmanaged<EFI_GRAPHICS_OUTPUT_PROTOCOL*, uint, ulong> SetMode;
+		public readonly delegate* unmanaged<EFI_GRAPHICS_OUTPUT_PROTOCOL*, EFI_GRAPHICS_OUTPUT_BLT_PIXEL*, EFI_GRAPHICS_OUTPUT_BLT_OPERATION, nuint, nuint, nuint, nuint, nuint, nuint, nuint, ulong> Blt;
+		public readonly EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE* Mode;
+	}
 }
 
 #endif

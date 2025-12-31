@@ -16,67 +16,98 @@
 
 namespace System
 {
-    public enum ConsoleColor
-    {
-        Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta, DarkYellow,
-        Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White
-    }
+	public enum ConsoleColor
+	{
+		Black, DarkBlue, DarkGreen, DarkCyan, DarkRed, DarkMagenta, DarkYellow,
+		Gray, DarkGray, Blue, Green, Cyan, Red, Magenta, Yellow, White
+	}
 
-    public enum ConsoleKey
-    {
-        Escape = 27,
-        LeftArrow = 37,
-        UpArrow = 38,
-        RightArrow = 39,
-        DownArrow = 40,
-    }
+	public enum ConsoleKey
+	{
+		Escape = 27,
+		LeftArrow = 37,
+		UpArrow = 38,
+		RightArrow = 39,
+		DownArrow = 40,
+	}
 
-    public readonly struct ConsoleKeyInfo
-    {
-        public ConsoleKeyInfo(char keyChar, ConsoleKey key, bool shift, bool alt, bool control)
-        {
-            Key = key;
-        }
+	public readonly struct ConsoleKeyInfo
+	{
+		public ConsoleKeyInfo(char keyChar, ConsoleKey key, bool shift, bool alt, bool control)
+		{
+			Key = key;
+		}
 
-        public readonly ConsoleKey Key;
-    }
+		public readonly ConsoleKey Key;
+	}
 
-    public static unsafe partial class Console
-    {
-        public static void WriteLine(string s)
-        {
-            for (int i = 0; i < s.Length; i++)
-                Console.Write(s[i]);
-#if WINDOWS || UEFI
-            Console.Write('\r');
-#endif
-            Console.Write('\n');
-        }
+	public static unsafe partial class Console
+	{
+		public static void Write(string s)
+		{
+			for (int i = 0; i < s.Length; i++)
+				Console.Write(s[i]);
+		}
 
-        public static void WriteLine(int i)
-        {
-            const int BufferSize = 16;
-            char* pBuffer = stackalloc char[BufferSize];
-            if (i < 0)
-            {
-                Write('-');
-            }
-
-            char* pEnd = &pBuffer[BufferSize - 1];
-            char* pCurrent = pEnd;
-            do
-            {
-                *(pCurrent--) = (char)((i % 10) + '0');
-                i /= 10;
-            } while (i != 0);
-
-            while (pCurrent <= pEnd)
-                Write(*(pCurrent++));
+		public static void WriteLine(string s)
+		{
+			Write(s);
 
 #if WINDOWS || UEFI
-            Console.Write('\r');
+			Console.Write('\r');
 #endif
-            Console.Write('\n');
-        }
-    }
+			Console.Write('\n');
+		}
+
+		public static void Write(int i)
+		{
+			const int BufferSize = 16;
+			char* pBuffer = stackalloc char[BufferSize];
+			if (i < 0)
+			{
+				Write('-');
+			}
+
+			char* pEnd = &pBuffer[BufferSize - 1];
+			char* pCurrent = pEnd;
+			do
+			{
+				*(pCurrent--) = (char)((i % 10) + '0');
+				i /= 10;
+			} while (i != 0);
+
+			while (pCurrent <= pEnd)
+				Write(*(pCurrent++));
+		}
+
+		public static void Write(uint i)
+		{
+			Write((int)i);
+		}
+
+		public static void WriteLine(int i)
+		{
+			Write(i);
+
+#if WINDOWS || UEFI
+			Console.Write('\r');
+#endif
+			Console.Write('\n');
+		}
+
+		public static void Print(string Str)
+		{
+			WriteLine(Str);
+		}
+
+		public static void Print(params object[] Args)
+		{
+			for (int i = 0; i < Args.Length; i++)
+			{
+				Write(Args[i].ToString());
+			}
+
+			WriteLine("");
+		}
+	}
 }

@@ -7,31 +7,10 @@ using Internal.Runtime.CompilerHelpers;
 
 public unsafe static class Program
 {
-	public static string PtrToHexString(nint value)
-	{
-		const string hex = "0123456789ABCDEF";
-
-		// 2 for "0x" + 16 nybbles for 64-bit + null
-		char* buf = stackalloc char[2 + 16];
-
-		buf[0] = '0';
-		buf[1] = 'x';
-
-		ulong v = (ulong)value;
-
-		for (int i = 0; i < 16; i++)
-		{
-			int shift = (15 - i) * 4;
-			buf[2 + i] = hex[(int)((v >> shift) & 0xF)];
-		}
-
-		return new string(buf);
-	}
-
 	static string ToStr(nint ptr)
 	{
 		//return ptr.ToString("X16");
-		return PtrToHexString(ptr);
+		return Utils.PtrToHexString(ptr);
 	}
 
 
@@ -49,18 +28,64 @@ public unsafe static class Program
 		fixed (char* messagePtr = message)
 			systemTable->ConOut->OutputString(systemTable->ConOut, messagePtr);
 
-		EFI_GUID gopGuid;
+
 		byte[] Data4Bytes = new byte[] { 0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a };
-		EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
 
-		fixed (byte* Data4Ptr = Data4Bytes)
+		EFI_GUID gopGuid = new EFI_GUID();
+		gopGuid.Data1 = 0x9042a9de;
+		gopGuid.Data2 = 0x23dc;
+		gopGuid.Data3 = 0x4a38;
+		for (int i = 0; i < 8; i++)
 		{
-			gopGuid.Data1 = 0x9042a9de;
-			gopGuid.Data2 = 0x23dc;
-			gopGuid.Data3 = 0x4a38;
-			gopGuid.Data4 = Data4Ptr;
+			gopGuid.Data4[i] = Data4Bytes[i];
+		}
 
-			systemTable->BootServices->LocateProtocol(systemTable->BootServices, gopGuid, null, (void**)&gop);
+		EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
+		systemTable->BootServices->LocateProtocol(&gopGuid, null, (void**)&gop);
+
+		if (gop == null)
+		{
+			Console.WriteLine("Unable to locate GOP");
+		}
+		else
+		{
+			Console.WriteLine("GOP Found");
+			Console.WriteLine(ToStr((nint)gop));
+
+			nuint SizeOfInfo;
+			EFI_GRAPHICS_OUTPUT_MODE_INFORMATION* info;
+			gop->QueryMode(gop, 0, &SizeOfInfo, &info);
+
+			uint numModes = gop->Mode->MaxMode;
+			for (uint i = 0; i < numModes; i++)
+			{
+				gop->QueryMode(gop, i, &SizeOfInfo, &info);
+
+				int W = (int)info->HorizontalResolution;
+				int H = (int)info->VerticalResolution;
+				Console.Print("Mode ", i, ", W = ", W, ", H = ", H);
+
+				if (W == 1920 && H == 1080)
+				{
+					Console.WriteLine("Setting mode to 1920x1080");
+					gop->SetMode(gop, i);
+					break;
+				}
+			}
+
+			Console.SetCursorPosition(0, 0);
+			Console.WriteLine("Hello 1920x1080 World!");
+
+			nuint sourceX = 0;
+			nuint sourceY = 0;
+			nuint destX = 300;
+			nuint destY = 150;
+			nuint ww = 200;
+			nuint hh = 150;
+			nuint delta = 0;
+			EFI_GRAPHICS_OUTPUT_BLT_PIXEL color;
+			color.Red = 255;
+			gop->Blt(gop, &color, EFI_GRAPHICS_OUTPUT_BLT_OPERATION.EfiBltVideoFill, sourceX, sourceY, destX, destY, ww, hh, delta);
 		}
 
 

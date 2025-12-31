@@ -17,5 +17,6 @@
 namespace System
 {
     public class Type { }
+
     public class RuntimeType : Type { }
 }

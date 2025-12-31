@@ -16,30 +16,91 @@
 
 namespace System
 {
-    public struct Void { }
+	public struct Void { }
 
-    // The layout of primitive types is special cased because it would be recursive.
-    // These really don't need any fields to work.
-    public struct Boolean { }
-    public struct Char { }
-    public struct SByte { }
-    public struct Byte { }
-    public struct Int16 { }
-    public struct UInt16 { }
-    public struct Int32
-    {
-        public const int MaxValue = 0x7fffffff;
-        public const int MinValue = unchecked((int)0x80000000);
-    }
-    public struct UInt32 { }
-    public struct Int64
-    {
-        public const long MaxValue = 0x7fffffffffffffffL;
-        public const long MinValue = unchecked((long)0x8000000000000000L);
-    }
-    public struct UInt64 { }
-    public struct IntPtr { }
-    public struct UIntPtr { }
-    public struct Single { }
-    public struct Double { }
+	// The layout of primitive types is special cased because it would be recursive.
+	// These really don't need any fields to work.
+	public struct Boolean
+	{
+		public override string ToString()
+		{
+			if (this)
+				return "true";
+
+			return "false";
+		}
+	}
+	public struct Char
+	{
+		public override string ToString()
+		{
+			return Utils.NumToDecString((long)this);
+		}
+	}
+	public struct SByte
+	{
+		public override string ToString()
+		{
+			return Utils.NumToDecString((long)this);
+		}
+	}
+	public struct Byte
+	{
+		public override string ToString()
+		{
+			return Utils.NumToDecString((long)this);
+		}
+	}
+	public struct Int16
+	{
+		public override string ToString()
+		{
+			return Utils.NumToDecString((long)this);
+		}
+	}
+	public struct UInt16
+	{
+		public override string ToString()
+		{
+			return Utils.NumToDecString((long)this);
+		}
+	}
+	public struct Int32
+	{
+		public const int MaxValue = 0x7fffffff;
+		public const int MinValue = unchecked((int)0x80000000);
+
+		public override string ToString()
+		{
+			return Utils.NumToDecString((long)this);
+		}
+	}
+	public struct UInt32
+	{
+		public override string ToString()
+		{
+			return Utils.NumToDecString((long)this);
+		}
+	}
+	public struct Int64
+	{
+		public const long MaxValue = 0x7fffffffffffffffL;
+		public const long MinValue = unchecked((long)0x8000000000000000L);
+
+		public override string ToString()
+		{
+			return Utils.NumToDecString((long)this);
+		}
+	}
+	public struct UInt64
+	{
+		public override string ToString()
+		{
+			return Utils.NumToDecString((long)this);
+		}
+	}
+	public struct IntPtr { }
+	public struct UIntPtr { }
+	public struct Single { }
+	public struct Double { }
 }

@@ -15,14 +15,41 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System.Runtime;
+using System.Runtime.CompilerServices;
 
 namespace System
 {
-    public partial class Object
-    {
+	public partial class Object
+	{
 #pragma warning disable 169
-        // The layout of object is a contract with the compiler.
-        internal unsafe MethodTable* m_pMethodTable;
+		// The layout of object is a contract with the compiler.
+		internal unsafe MethodTable* m_pMethodTable;
 #pragma warning restore 169
-    }
+
+		public virtual unsafe Type GetType()
+		{
+			MethodTable* mt = m_pMethodTable;
+			if (mt == null)
+				return null;
+
+			RuntimeType* runtimeType = (RuntimeType*)mt->_writableData;
+
+			if (runtimeType == null)
+				return null;
+		
+			return Unsafe.AsRef<RuntimeType>(runtimeType);
+
+			//return null;
+		}
+
+		public virtual unsafe string ToString()
+		{
+			/*Type TT = GetType();
+
+			if (TT == null)
+				return "object (no type)";*/
+
+			return "object";
+		}
+	}
 }

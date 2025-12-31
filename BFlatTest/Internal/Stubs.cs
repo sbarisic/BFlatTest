@@ -21,121 +21,137 @@ using System.Runtime.CompilerServices;
 
 namespace System.Runtime
 {
-    internal sealed class RuntimeExportAttribute : Attribute
-    {
-        public RuntimeExportAttribute(string entry) { }
-    }
+	internal sealed class RuntimeExportAttribute : Attribute
+	{
+		public RuntimeExportAttribute(string entry) { }
+	}
 
-    internal sealed class RuntimeImportAttribute : Attribute
-    {
-        public RuntimeImportAttribute(string lib) { }
-        public RuntimeImportAttribute(string lib, string entry) { }
-    }
+	internal sealed class RuntimeImportAttribute : Attribute
+	{
+		public RuntimeImportAttribute(string lib) { }
+		public RuntimeImportAttribute(string lib, string entry) { }
+	}
 
-    internal unsafe struct MethodTable
-    {
-        internal ushort _usComponentSize;
-        private ushort _usFlags;
-        internal uint _uBaseSize;
-        internal MethodTable* _relatedType;
-        private ushort _usNumVtableSlots;
-        private ushort _usNumInterfaces;
-        private uint _uHashCode;
-    }
+	[StructLayout(LayoutKind.Explicit)]
+	internal unsafe struct RelatedTypeUnion
+	{
+		[FieldOffset(0)]
+		public MethodTable* _pBaseType;
+
+		[FieldOffset(0)]
+		public MethodTable* _pRelatedParameterType;
+	}
+
+	internal unsafe struct MethodTable
+	{
+		public ushort _usComponentSize;
+		public ushort _usFlags;
+		public uint _uBaseSize;
+		public RelatedTypeUnion _relatedType;
+		public ushort _usNumVtableSlots;
+		public ushort _usNumInterfaces;
+		public uint _uHashCode;
+
+		public MethodTable** _interfaceMap;  // Interface map after vtable  
+		public void* _elementType;          // Element type or PerInstInfo  
+		public MethodTable*** _perInstInfo; // Generic instantiation info  
+		public void* _writableData;         // NativeAOT specific - caches RuntimeType  
+
+	}
 }
 
 namespace Internal.Runtime.CompilerHelpers
 {
-    partial class ThrowHelpers
-    {
-        static void ThrowIndexOutOfRangeException() => Environment.FailFast(null);
-        static void ThrowDivideByZeroException() => Environment.FailFast(null);
-        static void ThrowPlatformNotSupportedException() => Environment.FailFast(null);
-    }
+	partial class ThrowHelpers
+	{
+		static void ThrowIndexOutOfRangeException() => Environment.FailFast(null);
+		static void ThrowDivideByZeroException() => Environment.FailFast(null);
+		static void ThrowPlatformNotSupportedException() => Environment.FailFast(null);
+	}
 
-    // A class that the compiler looks for that has helpers to initialize the
-    // process. The compiler can gracefully handle the helpers not being present,
-    // but the class itself being absent is unhandled. Let's add an empty class.
-    unsafe partial class StartupCodeHelpers
-    {
-        // A couple symbols the generated code will need we park them in this class
-        // for no particular reason. These aid in transitioning to/from managed code.
-        // Since we don't have a GC, the transition is a no-op.
-        [RuntimeExport("RhpReversePInvoke")]
-        static void RhpReversePInvoke(IntPtr frame) { }
-        [RuntimeExport("RhpReversePInvokeReturn")]
-        static void RhpReversePInvokeReturn(IntPtr frame) { }
-        [RuntimeExport("RhpPInvoke")]
-        static void RhpPInvoke(IntPtr frame) { }
-        [RuntimeExport("RhpPInvokeReturn")]
-        static void RhpPInvokeReturn(IntPtr frame) { }
-        [RuntimeExport("RhpGcPoll")]
-        static void RhpGcPoll() { }
+	// A class that the compiler looks for that has helpers to initialize the
+	// process. The compiler can gracefully handle the helpers not being present,
+	// but the class itself being absent is unhandled. Let's add an empty class.
+	unsafe partial class StartupCodeHelpers
+	{
+		// A couple symbols the generated code will need we park them in this class
+		// for no particular reason. These aid in transitioning to/from managed code.
+		// Since we don't have a GC, the transition is a no-op.
+		[RuntimeExport("RhpReversePInvoke")]
+		static void RhpReversePInvoke(IntPtr frame) { }
+		[RuntimeExport("RhpReversePInvokeReturn")]
+		static void RhpReversePInvokeReturn(IntPtr frame) { }
+		[RuntimeExport("RhpPInvoke")]
+		static void RhpPInvoke(IntPtr frame) { }
+		[RuntimeExport("RhpPInvokeReturn")]
+		static void RhpPInvokeReturn(IntPtr frame) { }
+		[RuntimeExport("RhpGcPoll")]
+		static void RhpGcPoll() { }
 
-        [RuntimeExport("RhpFallbackFailFast")]
-        static void RhpFallbackFailFast() { Environment.FailFast(null); }
+		[RuntimeExport("RhpFallbackFailFast")]
+		static void RhpFallbackFailFast() { Environment.FailFast(null); }
 
-        [RuntimeExport("RhpNewFast")]
-        static unsafe void* RhpNewFast(MethodTable* pMT)
-        {
-            MethodTable** result = AllocObject(pMT->_uBaseSize);
-            *result = pMT;
-            return result;
-        }
+		[RuntimeExport("RhpNewFast")]
+		static unsafe void* RhpNewFast(MethodTable* pMT)
+		{
+			MethodTable** result = AllocObject(pMT->_uBaseSize);
+			*result = pMT;
+			return result;
+		}
 
-        [RuntimeExport("RhpNewArray")]
-        static unsafe void* RhpNewArray(MethodTable* pMT, int numElements)
-        {
-            if (numElements < 0)
-                Environment.FailFast(null);
+		[RuntimeExport("RhpNewArray")]
+		static unsafe void* RhpNewArray(MethodTable* pMT, int numElements)
+		{
+			if (numElements < 0)
+				Environment.FailFast(null);
 
-            MethodTable** result = AllocObject((uint)(pMT->_uBaseSize + numElements * pMT->_usComponentSize));
-            *result = pMT;
-            *(int*)(result + 1) = numElements;
-            return result;
-        }
+			MethodTable** result = AllocObject((uint)(pMT->_uBaseSize + numElements * pMT->_usComponentSize));
+			*result = pMT;
+			*(int*)(result + 1) = numElements;
+			return result;
+		}
 
-        internal struct ArrayElement
-        {
-            public object Value;
-        }
+		internal struct ArrayElement
+		{
+			public object Value;
+		}
 
-        [RuntimeExport("RhpStelemRef")]
-        public static unsafe void StelemRef(Array array, nint index, object obj)
-        {
-            ref object element = ref Unsafe.As<ArrayElement[]>(array)[index].Value;
+		[RuntimeExport("RhpStelemRef")]
+		public static unsafe void StelemRef(Array array, nint index, object obj)
+		{
+			ref object element = ref Unsafe.As<ArrayElement[]>(array)[index].Value;
 
-            MethodTable* elementType = array.m_pMethodTable->_relatedType;
+			MethodTable* elementType = (MethodTable*)array.m_pMethodTable->_relatedType._pBaseType;
 
-            if (obj == null)
-                goto assigningNull;
+			if (obj == null)
+				goto assigningNull;
 
-            if (elementType != obj.m_pMethodTable)
-                Environment.FailFast(null); /* covariance */
+			if (elementType != obj.m_pMethodTable)
+				Environment.FailFast(null); /* covariance */
 
-doWrite:
-            element = obj;
-            return;
+			doWrite:
+			element = obj;
+			return;
 
-assigningNull:
-            element = null;
-            return;
-        }
+		assigningNull:
+			element = null;
+			return;
+		}
 
-        [RuntimeExport("RhpCheckedAssignRef")]
-        public static unsafe void RhpCheckedAssignRef(void** dst, void* r)
-        {
-            *dst = r;
-        }
+		[RuntimeExport("RhpCheckedAssignRef")]
+		public static unsafe void RhpCheckedAssignRef(void** dst, void* r)
+		{
+			*dst = r;
+		}
 
-        [RuntimeExport("RhpAssignRef")]
-        public static unsafe void RhpAssignRef(void** dst, void* r)
-        {
-            *dst = r;
-        }
+		[RuntimeExport("RhpAssignRef")]
+		public static unsafe void RhpAssignRef(void** dst, void* r)
+		{
+			*dst = r;
+		}
 
-        static unsafe MethodTable** AllocObject(uint size)
-        {
+		static unsafe MethodTable** AllocObject(uint size)
+		{
 #if WINDOWS
             [DllImport("kernel32"), SuppressGCTransition]
             static extern MethodTable** LocalAlloc(uint flags, uint size);
@@ -145,17 +161,17 @@ assigningNull:
             static extern MethodTable** SystemNative_Malloc(nuint size);
             MethodTable** result = SystemNative_Malloc(size);
 #elif UEFI
-            MethodTable** result;
-            if (EfiSystemTable->BootServices->AllocatePool((EFI_MEMORY_TYPE)2 /* LoaderData*/, (nuint)size, (void**)&result) != 0)
-                result = null;
+			MethodTable** result;
+			if (EfiSystemTable->BootServices->AllocatePool((EFI_MEMORY_TYPE)2 /* LoaderData*/, (nuint)size, (void**)&result) != 0)
+				result = null;
 #else
 #error Nope
 #endif
 
-            if (result == null)
-                Environment.FailFast(null);
+			if (result == null)
+				Environment.FailFast(null);
 
-            return result;
-        }
-    }
+			return result;
+		}
+	}
 }
