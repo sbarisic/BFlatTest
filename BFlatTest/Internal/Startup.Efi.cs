@@ -173,41 +173,6 @@ namespace Internal.Runtime.CompilerHelpers
 		public readonly delegate* unmanaged<uint, ulong*, ulong*, ulong*, ulong> QueryVariableInfo;
 	}
 
-	//[StructLayout(LayoutKind.Sequential)]
-	//public unsafe readonly struct EFI_BOOT_SERVICES
-	//{
-	//	readonly EFI_TABLE_HEADER Hdr;
-	//	private readonly void* pad0;
-	//	private readonly void* pad1;
-	//	private readonly void* pad2;
-	//	private readonly void* pad3;
-	//	private readonly void* pad4;
-	//	public readonly delegate* unmanaged<int, nint, void**, ulong> AllocatePool;
-	//	private readonly void* pad6;
-	//	private readonly void* pad7;
-	//	private readonly void* pad8;
-	//	private readonly void* pad9;
-	//	private readonly void* pad10;
-	//	private readonly void* pad11;
-	//	private readonly void* pad12;
-	//	private readonly void* pad13;
-	//	private readonly void* pad14;
-	//	private readonly void* pad15;
-	//	private readonly void* pad16;
-	//	private readonly void* pad17;
-	//	private readonly void* pad18;
-	//	private readonly void* pad19;
-	//	private readonly void* pad20;
-	//	private readonly void* pad21;
-	//	private readonly void* pad22;
-	//	private readonly void* pad23;
-	//	private readonly void* pad24;
-	//	private readonly void* pad25;
-	//	private readonly void* pad26;
-	//	private readonly void* pad27;
-	//	public readonly delegate* unmanaged<uint, ulong> Stall;
-	//}
-
 	public enum EFI_INTERFACE_TYPE
 	{
 		EFI_NATIVE_INTERFACE
