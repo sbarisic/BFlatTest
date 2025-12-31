@@ -43,8 +43,26 @@ public unsafe static class Program
 		Console.WriteLine(ToStr((nint)imageHandle));
 		Console.WriteLine(ToStr((nint)systemTable));
 
-		
-		systemTable->RuntimeServices->
+		//systemTable->BootServices->Stall();
+
+		string message = "Hello from UEFI via Console Output!\r\n\0";
+		fixed (char* messagePtr = message)
+			systemTable->ConOut->OutputString(systemTable->ConOut, messagePtr);
+
+		EFI_GUID gopGuid;
+		byte[] Data4Bytes = new byte[] { 0x96, 0xfb, 0x7a, 0xde, 0xd0, 0x80, 0x51, 0x6a };
+		EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
+
+		fixed (byte* Data4Ptr = Data4Bytes)
+		{
+			gopGuid.Data1 = 0x9042a9de;
+			gopGuid.Data2 = 0x23dc;
+			gopGuid.Data3 = 0x4a38;
+			gopGuid.Data4 = Data4Ptr;
+
+			systemTable->BootServices->LocateProtocol(systemTable->BootServices, gopGuid, null, (void**)&gop);
+		}
+
 
 		// Use it to access UEFI services  
 		//systemTable->ConOut->OutputString(systemTable->ConOut, "Hello from UEFI!\0");

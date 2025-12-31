@@ -146,7 +146,7 @@ assigningNull:
             MethodTable** result = SystemNative_Malloc(size);
 #elif UEFI
             MethodTable** result;
-            if (EfiSystemTable->BootServices->AllocatePool(2 /* LoaderData*/, (nint)size, (void**)&result) != 0)
+            if (EfiSystemTable->BootServices->AllocatePool((EFI_MEMORY_TYPE)2 /* LoaderData*/, (nuint)size, (void**)&result) != 0)
                 result = null;
 #else
 #error Nope

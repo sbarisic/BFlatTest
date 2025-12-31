@@ -143,40 +143,259 @@ namespace Internal.Runtime.CompilerHelpers
 		public readonly delegate* unmanaged<EFI_TIME*, EFI_TIME_CAPABILITIES*, ulong> GetTime;
 	}
 
+	//[StructLayout(LayoutKind.Sequential)]
+	//public unsafe readonly struct EFI_BOOT_SERVICES
+	//{
+	//	readonly EFI_TABLE_HEADER Hdr;
+	//	private readonly void* pad0;
+	//	private readonly void* pad1;
+	//	private readonly void* pad2;
+	//	private readonly void* pad3;
+	//	private readonly void* pad4;
+	//	public readonly delegate* unmanaged<int, nint, void**, ulong> AllocatePool;
+	//	private readonly void* pad6;
+	//	private readonly void* pad7;
+	//	private readonly void* pad8;
+	//	private readonly void* pad9;
+	//	private readonly void* pad10;
+	//	private readonly void* pad11;
+	//	private readonly void* pad12;
+	//	private readonly void* pad13;
+	//	private readonly void* pad14;
+	//	private readonly void* pad15;
+	//	private readonly void* pad16;
+	//	private readonly void* pad17;
+	//	private readonly void* pad18;
+	//	private readonly void* pad19;
+	//	private readonly void* pad20;
+	//	private readonly void* pad21;
+	//	private readonly void* pad22;
+	//	private readonly void* pad23;
+	//	private readonly void* pad24;
+	//	private readonly void* pad25;
+	//	private readonly void* pad26;
+	//	private readonly void* pad27;
+	//	public readonly delegate* unmanaged<uint, ulong> Stall;
+	//}
+
+	public enum EFI_INTERFACE_TYPE
+	{
+		EFI_NATIVE_INTERFACE
+	}
+
+	public enum EFI_LOCATE_SEARCH_TYPE
+	{
+		AllHandles,
+		ByRegisterNotify,
+		ByProtocol
+	}
+
+	public enum EFI_ALLOCATE_TYPE
+	{
+		AllocateAnyPages,
+		AllocateMaxAddress,
+		AllocateAddress,
+		MaxAllocateType
+	}
+
+	public enum EFI_MEMORY_TYPE
+	{
+		EfiReservedMemoryType,
+		EfiLoaderCode,
+		EfiLoaderData,
+		EfiBootServicesCode,
+		EfiBootServicesData,
+		EfiRuntimeServicesCode,
+		EfiRuntimeServicesData,
+		EfiConventionalMemory,
+		EfiUnusableMemory,
+		EfiACPIReclaimMemory,
+		EfiACPIMemoryNVS,
+		EfiMemoryMappedIO,
+		EfiMemoryMappedIOPortSpace,
+		EfiPalCode,
+		EfiPersistentMemory,
+		EfiMaxMemoryType
+	}
+
+	public enum EFI_TIMER_DELAY
+	{
+		TimerCancel,
+		TimerPeriodic,
+		TimerRelative
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_DEVICE_PATH_PROTOCOL
+	{
+		public byte Type;
+		public byte SubType;
+		public unsafe fixed byte Length[2];
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_OPEN_PROTOCOL_INFORMATION_ENTRY
+	{
+		public EFI_HANDLE AgentHandle;
+		public EFI_HANDLE ControllerHandle;
+		public uint Attributes;
+		public uint OpenCount;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_MEMORY_DESCRIPTOR
+	{
+		public uint Type;
+		public ulong PhysicalStart;
+		public ulong VirtualStart;
+		public ulong NumberOfPages;
+		public ulong Attribute;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_GUID
+	{
+		public uint Data1;
+		public ushort Data2;
+		public ushort Data3;
+		public unsafe fixed byte Data4[8];
+	}
+
+	public struct EFI_EVENT
+	{
+		private IntPtr _event;
+	}
+
+	public struct EFI_TPL
+	{
+		private nuint _tpl;
+	}
+
+	public struct EFI_STATUS
+	{
+		private nuint _status;
+	}
+
+	public struct EFI_PHYSICAL_ADDRESS
+	{
+		private ulong _address;
+	}
+
 	[StructLayout(LayoutKind.Sequential)]
 	public unsafe readonly struct EFI_BOOT_SERVICES
 	{
-		readonly EFI_TABLE_HEADER Hdr;
-		private readonly void* pad0;
-		private readonly void* pad1;
-		private readonly void* pad2;
-		private readonly void* pad3;
-		private readonly void* pad4;
-		public readonly delegate* unmanaged<int, nint, void**, ulong> AllocatePool;
-		private readonly void* pad6;
-		private readonly void* pad7;
-		private readonly void* pad8;
-		private readonly void* pad9;
-		private readonly void* pad10;
-		private readonly void* pad11;
-		private readonly void* pad12;
-		private readonly void* pad13;
-		private readonly void* pad14;
-		private readonly void* pad15;
-		private readonly void* pad16;
-		private readonly void* pad17;
-		private readonly void* pad18;
-		private readonly void* pad19;
-		private readonly void* pad20;
-		private readonly void* pad21;
-		private readonly void* pad22;
-		private readonly void* pad23;
-		private readonly void* pad24;
-		private readonly void* pad25;
-		private readonly void* pad26;
-		private readonly void* pad27;
-		public readonly delegate* unmanaged<uint, ulong> Stall;
+		public readonly EFI_TABLE_HEADER Hdr;
+		public readonly delegate* unmanaged<EFI_TPL, EFI_TPL> RaiseTPL;
+		public readonly delegate* unmanaged<EFI_TPL, void> RestoreTPL;
+		public readonly delegate* unmanaged<EFI_ALLOCATE_TYPE, EFI_MEMORY_TYPE, nuint, EFI_PHYSICAL_ADDRESS*, ulong> AllocatePages;
+		public readonly delegate* unmanaged<EFI_PHYSICAL_ADDRESS, nuint, ulong> FreePages;
+		public readonly delegate* unmanaged<nuint*, EFI_MEMORY_DESCRIPTOR*, nuint*, nuint*, uint*, ulong> GetMemoryMap;
+		public readonly delegate* unmanaged<EFI_MEMORY_TYPE, nuint, void**, ulong> AllocatePool;
+		public readonly delegate* unmanaged<void*, ulong> FreePool;
+		public readonly delegate* unmanaged<uint, EFI_TPL, delegate* unmanaged<EFI_EVENT, void*, void>, void*, EFI_EVENT*, ulong> CreateEvent;
+		public readonly delegate* unmanaged<EFI_EVENT, EFI_TIMER_DELAY, ulong, ulong> SetTimer;
+		public readonly delegate* unmanaged<nuint, EFI_EVENT*, nuint*, ulong> WaitForEvent;
+		public readonly delegate* unmanaged<EFI_EVENT, ulong> SignalEvent;
+		public readonly delegate* unmanaged<EFI_EVENT, ulong> CloseEvent;
+		public readonly delegate* unmanaged<EFI_EVENT, ulong> CheckEvent;
+		public readonly delegate* unmanaged<EFI_HANDLE*, EFI_GUID*, EFI_INTERFACE_TYPE, void*, ulong> InstallProtocolInterface;
+		public readonly delegate* unmanaged<EFI_HANDLE, EFI_GUID*, void*, void*, ulong> ReinstallProtocolInterface;
+		public readonly delegate* unmanaged<EFI_HANDLE, EFI_GUID*, void*, ulong> UninstallProtocolInterface;
+		public readonly delegate* unmanaged<EFI_HANDLE, EFI_GUID*, void**, ulong> HandleProtocol;
+		private readonly void* Reserved;
+		public readonly delegate* unmanaged<EFI_GUID*, EFI_EVENT, void**, ulong> RegisterProtocolNotify;
+		public readonly delegate* unmanaged<EFI_LOCATE_SEARCH_TYPE, EFI_GUID*, void*, nuint*, EFI_HANDLE*, ulong> LocateHandle;
+		public readonly delegate* unmanaged<EFI_GUID*, EFI_DEVICE_PATH_PROTOCOL**, EFI_HANDLE*, ulong> LocateDevicePath;
+		public readonly delegate* unmanaged<EFI_GUID*, void*, ulong> InstallConfigurationTable;
+		public readonly delegate* unmanaged<byte, EFI_HANDLE, EFI_DEVICE_PATH_PROTOCOL*, void*, nuint, EFI_HANDLE*, ulong> LoadImage;
+		public readonly delegate* unmanaged<EFI_HANDLE, nuint*, ushort**, ulong> StartImage;
+		public readonly delegate* unmanaged<EFI_HANDLE, EFI_STATUS, nuint, ushort*, ulong> Exit;
+		public readonly delegate* unmanaged<EFI_HANDLE, ulong> UnloadImage;
+		public readonly delegate* unmanaged<EFI_HANDLE, nuint, ulong> ExitBootServices;
+		public readonly delegate* unmanaged<ulong*, ulong> GetNextMonotonicCount;
+		public readonly delegate* unmanaged<nuint, ulong> Stall;
+		public readonly delegate* unmanaged<nuint, ulong, nuint, ushort*, ulong> SetWatchdogTimer;
+		public readonly delegate* unmanaged<EFI_HANDLE, EFI_HANDLE*, EFI_DEVICE_PATH_PROTOCOL*, byte, ulong> ConnectController;
+		public readonly delegate* unmanaged<EFI_HANDLE, EFI_HANDLE, EFI_HANDLE, ulong> DisconnectController;
+		public readonly delegate* unmanaged<EFI_HANDLE, EFI_GUID*, void**, EFI_HANDLE, EFI_HANDLE, uint, ulong> OpenProtocol;
+		public readonly delegate* unmanaged<EFI_HANDLE, EFI_GUID*, EFI_HANDLE, EFI_HANDLE, ulong> CloseProtocol;
+		public readonly delegate* unmanaged<EFI_HANDLE, EFI_GUID*, EFI_OPEN_PROTOCOL_INFORMATION_ENTRY**, nuint*, ulong> OpenProtocolInformation;
+		public readonly delegate* unmanaged<EFI_HANDLE, EFI_GUID***, nuint*, ulong> ProtocolsPerHandle;
+		public readonly delegate* unmanaged<EFI_LOCATE_SEARCH_TYPE, EFI_GUID*, void*, nuint*, EFI_HANDLE**, ulong> LocateHandleBuffer;
+		public readonly delegate* unmanaged<EFI_GUID*, void*, void**, ulong> LocateProtocol;
+		private readonly void* InstallMultipleProtocolInterfaces;
+		private readonly void* UninstallMultipleProtocolInterfaces;
+		public readonly delegate* unmanaged<void*, nuint, uint*, ulong> CalculateCrc32;
+		public readonly delegate* unmanaged<void*, void*, nuint, void> CopyMem;
+		public readonly delegate* unmanaged<void*, nuint, byte, void> SetMem;
+		public readonly delegate* unmanaged<uint, EFI_TPL, delegate* unmanaged<EFI_EVENT, void*, void>, void*, EFI_GUID*, EFI_EVENT*, ulong> CreateEventEx;
 	}
+
+	/* TODO: Translate to C#
+	
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_GRAPHICS_OUTPUT_PROTOCOL_QUERY_MODE) (
+ IN EFI_GRAPHICS_OUTPUT_PROTOCOL              *This,
+ IN UINT32                                    ModeNumber,
+ OUT UINTN                                    *SizeOfInfo
+ OUT EFI_GRAPHICS_OUTPUT_MODE_INFORMATION     **Info
+ );
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_GRAPHICS_OUTPUT_PROTOCOL_SET_MODE) (
+ IN EFI_GRAPHICS_OUTPUT_PROTOCOL                *This,
+ IN UINT32                                      ModeNumber
+ );
+
+	typedef struct {
+ UINT8                        Blue;
+ UINT8                        Green;
+ UINT8                        Red;
+ UINT8                        Reserved;
+} EFI_GRAPHICS_OUTPUT_BLT_PIXEL;
+
+typedef enum {
+ EfiBltVideoFill,
+ EfiBltVideoToBltBuffer,
+ EfiBltBufferToVideo,
+ EfiBltVideoToVideo,
+ EfiGraphicsOutputBltOperationMax
+} EFI_GRAPHICS_OUTPUT_BLT_OPERATION;
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_GRAPHICS_OUTPUT_PROTOCOL_BLT) (
+ IN EFI_GRAPHICS_OUTPUT_PROTOCOL                 *This,
+ IN OUT EFI_GRAPHICS_OUTPUT_BLT_PIXEL            *BltBuffer, OPTIONAL
+ IN EFI_GRAPHICS_OUTPUT_BLT_OPERATION            BltOperation,
+ IN UINTN                                        SourceX,
+ IN UINTN                                        SourceY,
+ IN UINTN                                        DestinationX,
+ IN UINTN                                        DestinationY,
+ IN UINTN                                        Width,
+ IN UINTN                                        Height,
+ IN UINTN                                        Delta OPTIONAL
+ );
+
+	typedef struct {
+  UINT32                                    MaxMode;
+  UINT32                                    Mode;
+  EFI_GRAPHICS_OUTPUT_MODE_INFORMATION      *Info;
+ UINTN                                      SizeOfInfo;
+  EFI_PHYSICAL_ADDRESS                      FrameBufferBase;
+  UINTN                                     FrameBufferSize;
+
+} EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE;
+
+	  typedef struct EFI_GRAPHICS_OUTPUT_PROTCOL {
+ EFI_GRAPHICS_OUTPUT_PROTOCOL_QUERY_MODE     QueryMode;
+ EFI_GRAPHICS_OUTPUT_PROTOCOL_SET_MODE       SetMode;
+ EFI_GRAPHICS_OUTPUT_PROTOCOL_BLT            Blt;
+ EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE           *Mode;
+} EFI_GRAPHICS_OUTPUT_PROTOCOL;
+	*/
 }
 
 #endif
