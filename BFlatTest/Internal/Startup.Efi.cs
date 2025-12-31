@@ -136,11 +136,41 @@ namespace Internal.Runtime.CompilerHelpers
 		public byte SetsToZero;
 	}
 
+	public enum EFI_RESET_TYPE
+	{
+		EfiResetCold,
+		EfiResetWarm,
+		EfiResetShutdown,
+		EfiResetPlatformSpecific
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_CAPSULE_HEADER
+	{
+		public EFI_GUID CapsuleGuid;
+		public uint HeaderSize;
+		public uint Flags;
+		public uint CapsuleImageSize;
+	}
+
 	[StructLayout(LayoutKind.Sequential)]
 	public unsafe readonly struct EFI_RUNTIME_SERVICES
 	{
 		public readonly EFI_TABLE_HEADER Hdr;
 		public readonly delegate* unmanaged<EFI_TIME*, EFI_TIME_CAPABILITIES*, ulong> GetTime;
+		public readonly delegate* unmanaged<EFI_TIME*, ulong> SetTime;
+		public readonly delegate* unmanaged<byte*, byte*, EFI_TIME*, ulong> GetWakeupTime;
+		public readonly delegate* unmanaged<byte, EFI_TIME*, ulong> SetWakeupTime;
+		public readonly delegate* unmanaged<nuint, nuint, uint, EFI_MEMORY_DESCRIPTOR*, ulong> SetVirtualAddressMap;
+		public readonly delegate* unmanaged<nuint, void**, ulong> ConvertPointer;
+		public readonly delegate* unmanaged<char*, EFI_GUID*, uint*, nuint*, void*, ulong> GetVariable;
+		public readonly delegate* unmanaged<nuint*, char*, EFI_GUID*, ulong> GetNextVariableName;
+		public readonly delegate* unmanaged<char*, EFI_GUID*, uint, nuint, void*, ulong> SetVariable;
+		public readonly delegate* unmanaged<uint*, ulong> GetNextHighMonotonicCount;
+		public readonly delegate* unmanaged<EFI_RESET_TYPE, EFI_STATUS, nuint, void*, void> ResetSystem;
+		public readonly delegate* unmanaged<EFI_CAPSULE_HEADER**, nuint, EFI_PHYSICAL_ADDRESS, ulong> UpdateCapsule;
+		public readonly delegate* unmanaged<EFI_CAPSULE_HEADER**, nuint, ulong*, EFI_RESET_TYPE*, ulong> QueryCapsuleCapabilities;
+		public readonly delegate* unmanaged<uint, ulong*, ulong*, ulong*, ulong> QueryVariableInfo;
 	}
 
 	//[StructLayout(LayoutKind.Sequential)]
