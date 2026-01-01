@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Fish
 {
-	public static class Colors
+	/*public static class Colors
 	{
 		public readonly static Color Red;
 		public readonly static Color Green;
@@ -25,7 +25,7 @@ namespace Fish
 			Cyan = new Color(0, 255, 255);
 			Magenta = new Color(255, 0, 255);
 		}
-	}
+	}*/
 
 	[StructLayout(LayoutKind.Sequential, Pack = 1, Size = 4)]
 	public unsafe class Color

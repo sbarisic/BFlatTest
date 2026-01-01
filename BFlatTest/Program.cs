@@ -61,9 +61,9 @@ public unsafe static class Program
 			Console.SetCursorPosition(0, 0);
 			Console.WriteLine("Hello 1920x1080 World!");
 
-			FB.DrawRect(100, 100, 100, 100, Colors.Red);
-			FB.DrawRect(120, 120, 100, 100, Colors.Green);
-			FB.DrawRect(140, 140, 100, 100, Colors.Blue);
+			FB.DrawRect(100, 100, 100, 100, new Color(255, 0, 0));
+			FB.DrawRect(120, 120, 100, 100, new Color(0, 255, 0));
+			FB.DrawRect(140, 140, 100, 100, new Color(0, 0, 255));
 
 			Console.WriteLine("Rectangles drawn!");
 		}

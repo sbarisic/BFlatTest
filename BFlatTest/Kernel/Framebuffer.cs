@@ -88,9 +88,20 @@ namespace Kernel
 
 			//Unsafe.InitBlockUnaligned(ref Unsafe.AsRef<byte>(FramebufferPtr), 0xFF, 1920);
 			DrawRect(50, 50, 200, 200, new Color(255, 0, 0, 0));
+			Console.WriteLine("FishGL now!");
+
+			Console.WriteLine("Color buffer!");
+			FishGL.ColorBuffer = new FGLFramebuffer(1920, 1080);
+			FishGL.DepthBuffer = new FGLFramebuffer(1920, 1080);
+			FishGL.Fill(ref FishGL.ColorBuffer, new FGLColor(88, 104, 115));
+
+			FishGL.DrawColor = FGLColor.Black;
+			FishGL.Line(300, 250, 800, 400);
+
+			Unsafe.Copy(ref Unsafe.AsRef<byte>(FishGL.ColorBuffer.DataPtr), ref Unsafe.AsRef<byte>(FramebufferPtr), 1920 * 1080 * 4);
+
 
 			Console.WriteLine("Hello Worlde!");
-			MathF.Sin(2);
 		}
 
 		public void DrawRect(int X, int Y, int W, int H, Color color)

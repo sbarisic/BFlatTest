@@ -85,12 +85,16 @@ namespace Internal.Runtime.CompilerHelpers
 		// Since we don't have a GC, the transition is a no-op.
 		[RuntimeExport("RhpReversePInvoke")]
 		static void RhpReversePInvoke(IntPtr frame) { }
+
 		[RuntimeExport("RhpReversePInvokeReturn")]
 		static void RhpReversePInvokeReturn(IntPtr frame) { }
+
 		[RuntimeExport("RhpPInvoke")]
 		static void RhpPInvoke(IntPtr frame) { }
+
 		[RuntimeExport("RhpPInvokeReturn")]
 		static void RhpPInvokeReturn(IntPtr frame) { }
+
 		[RuntimeExport("RhpGcPoll")]
 		static void RhpGcPoll() { }
 
@@ -154,6 +158,12 @@ namespace Internal.Runtime.CompilerHelpers
 		public static unsafe void RhpAssignRef(void** dst, void* r)
 		{
 			*dst = r;
+		}
+
+		[RuntimeExport("RhpByRefAssignRef")]
+		public static unsafe void RhpByRefAssignRef(void* dst, void* src)
+		{
+			*(void**)dst = *(void**)src;
 		}
 
 		static unsafe MethodTable** AllocObject(uint size)
