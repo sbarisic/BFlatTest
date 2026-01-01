@@ -273,7 +273,7 @@ namespace Internal.Runtime.CompilerHelpers
 
 	public struct EFI_PHYSICAL_ADDRESS
 	{
-		private ulong _address;
+		public ulong _address;
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -362,6 +362,14 @@ namespace Internal.Runtime.CompilerHelpers
 		public byte Green;
 		public byte Red;
 		public byte Reserved;
+
+		public EFI_GRAPHICS_OUTPUT_BLT_PIXEL(byte r, byte g, byte b)
+		{
+			Red = r;
+			Green = g;
+			Blue = b;
+			Reserved = 0;
+		}
 	}
 
 	public enum EFI_GRAPHICS_OUTPUT_BLT_OPERATION

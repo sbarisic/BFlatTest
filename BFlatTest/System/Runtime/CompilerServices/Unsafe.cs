@@ -22,18 +22,43 @@ namespace System.Runtime.CompilerServices
         // It will do what Unsafe.Add is expected to do. It's just not possible to express it in C#.
         [Intrinsic]
         public static extern ref T Add<T>(ref T source, int elementOffset);
+
         [Intrinsic]
         public static extern ref T Add<T>(ref T source, IntPtr elementOffset);
+
         [Intrinsic]
         public static extern ref TTo As<TFrom, TTo>(ref TFrom source);
+
         [Intrinsic]
         public static extern T As<T>(object o) where T : class;
+
         [Intrinsic]
         public static extern void* AsPointer<T>(ref T value);
+
         [Intrinsic]
         public static extern ref T AsRef<T>(void* source);
+
         [Intrinsic]
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static extern IntPtr ByteOffset<T>(ref readonly T origin, ref readonly T target);
-    }
+
+        [Intrinsic]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static extern ref T AddByteOffset<T>(ref T source, IntPtr byteOffset);
+
+		[Intrinsic]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		internal static ref T AddByteOffset<T>(ref T source, nuint byteOffset)
+		{
+			return ref AddByteOffset(ref source, (IntPtr)(void*)byteOffset);
+		}
+
+		[Intrinsic]
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static void InitBlockUnaligned(ref byte startAddress, byte value, uint byteCount)
+		{
+			for (uint i = 0; i < byteCount; i++)
+				AddByteOffset(ref startAddress, i) = value;
+		}
+	}
 }

@@ -2,25 +2,32 @@
 
 namespace System
 {
-    public unsafe class Utils
+	public unsafe class Utils
 	{
-		public static string PtrToHexString(nint value)
+		public static unsafe string PtrToHexString(nint value)
 		{
 			const string hex = "0123456789ABCDEF";
-
-			// 2 for "0x" + 16 nybbles for 64-bit + null
-			char* buf = stackalloc char[2 + 16];
+			char* buf = stackalloc char[2 + 16 + 1];
 
 			buf[0] = '0';
 			buf[1] = 'x';
 
 			ulong v = (ulong)value;
 
-			for (int i = 0; i < 16; i++)
+			bool started = false;
+			int idx = 2;
+
+			for (int i = 15; i >= 0; i--)
 			{
-				int shift = (15 - i) * 4;
-				buf[2 + i] = hex[(int)((v >> shift) & 0xF)];
+				int digit = (int)((v >> (i * 4)) & 0xF);
+				if (digit != 0 || started || i == 0)
+				{
+					started = true;
+					buf[idx++] = hex[digit];
+				}
 			}
+
+			buf[idx] = '\0';
 
 			return new string(buf);
 		}

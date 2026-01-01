@@ -2,7 +2,7 @@
 
 namespace System.Runtime.InteropServices
 {
-	public sealed class FieldOffsetAttribute : Attribute
+	sealed class FieldOffsetAttribute : Attribute
 	{
 		public FieldOffsetAttribute(int offset)
 		{

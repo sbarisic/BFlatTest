@@ -4,6 +4,8 @@ using System;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using Internal.Runtime.CompilerHelpers;
+using Kernel;
+using Fish;
 
 public unsafe static class Program
 {
@@ -52,40 +54,18 @@ public unsafe static class Program
 			Console.WriteLine("GOP Found");
 			Console.WriteLine(ToStr((nint)gop));
 
-			nuint SizeOfInfo;
-			EFI_GRAPHICS_OUTPUT_MODE_INFORMATION* info;
-			gop->QueryMode(gop, 0, &SizeOfInfo, &info);
+			Framebuffer FB = new Framebuffer(gop);
+			FB.Init(1920, 1080);
 
-			uint numModes = gop->Mode->MaxMode;
-			for (uint i = 0; i < numModes; i++)
-			{
-				gop->QueryMode(gop, i, &SizeOfInfo, &info);
-
-				int W = (int)info->HorizontalResolution;
-				int H = (int)info->VerticalResolution;
-				Console.Print("Mode ", i, ", W = ", W, ", H = ", H);
-
-				if (W == 1920 && H == 1080)
-				{
-					Console.WriteLine("Setting mode to 1920x1080");
-					gop->SetMode(gop, i);
-					break;
-				}
-			}
 
 			Console.SetCursorPosition(0, 0);
 			Console.WriteLine("Hello 1920x1080 World!");
 
-			nuint sourceX = 0;
-			nuint sourceY = 0;
-			nuint destX = 300;
-			nuint destY = 150;
-			nuint ww = 200;
-			nuint hh = 150;
-			nuint delta = 0;
-			EFI_GRAPHICS_OUTPUT_BLT_PIXEL color;
-			color.Red = 255;
-			gop->Blt(gop, &color, EFI_GRAPHICS_OUTPUT_BLT_OPERATION.EfiBltVideoFill, sourceX, sourceY, destX, destY, ww, hh, delta);
+			FB.DrawRect(100, 100, 100, 100, Colors.Red);
+			FB.DrawRect(120, 120, 100, 100, Colors.Green);
+			FB.DrawRect(140, 140, 100, 100, Colors.Blue);
+
+			Console.WriteLine("Rectangles drawn!");
 		}
 
 

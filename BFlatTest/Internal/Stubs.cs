@@ -64,9 +64,15 @@ namespace Internal.Runtime.CompilerHelpers
 {
 	partial class ThrowHelpers
 	{
-		static void ThrowIndexOutOfRangeException() => Environment.FailFast(null);
-		static void ThrowDivideByZeroException() => Environment.FailFast(null);
-		static void ThrowPlatformNotSupportedException() => Environment.FailFast(null);
+		public static void ThrowIndexOutOfRangeException() => Environment.FailFast(null);
+
+		public static void ThrowDivideByZeroException() => Environment.FailFast(null);
+
+		public static void ThrowPlatformNotSupportedException() => Environment.FailFast(null);
+
+		public static void ThrowInvalidProgramException() => Environment.FailFast(null);
+
+		public static void ThrowInvalidProgramExceptionWithArgument(object id, string methodName) => Environment.FailFast(null);
 	}
 
 	// A class that the compiler looks for that has helpers to initialize the
@@ -172,6 +178,22 @@ namespace Internal.Runtime.CompilerHelpers
 				Environment.FailFast(null);
 
 			return result;
+		}
+	}
+
+	public static unsafe class NativeFuncs
+	{
+		[RuntimeExport("memset")]
+		public static void* Memset(void* dest, int c, nuint count)
+		{
+			byte* ptr = (byte*)dest;
+
+			for (nuint i = 0; i < count; i++)
+			{
+				ptr[i] = (byte)c;
+			}
+
+			return dest;
 		}
 	}
 }
