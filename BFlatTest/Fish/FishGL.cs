@@ -244,6 +244,13 @@ namespace Fish
 				FB.DataPtr[i] = Clr;
 		}
 
+		public static void Rect(int X, int Y, int W, int H)
+		{
+			for (int j = Y; j < Y + H; j++)
+				for (int i = X; i < X + W; i++)
+					ColorBuffer.DataPtr[j * ColorBuffer.Width + i] = DrawColor;
+		}
+
 		public static void Line(int X0, int Y0, int X1, int Y1)
 		{
 			bool Steep = false;

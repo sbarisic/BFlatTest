@@ -95,13 +95,18 @@ namespace Kernel
 			FishGL.DepthBuffer = new FGLFramebuffer(1920, 1080);
 			FishGL.Fill(ref FishGL.ColorBuffer, new FGLColor(88, 104, 115));
 
+			FishGL.DrawColor = new FGLColor(0, 255, 0);
+			FishGL.Rect(350, 220, 100, 100);
+
 			FishGL.DrawColor = FGLColor.Black;
 			FishGL.Line(300, 250, 800, 400);
 
-			Unsafe.Copy(ref Unsafe.AsRef<byte>(FishGL.ColorBuffer.DataPtr), ref Unsafe.AsRef<byte>(FramebufferPtr), 1920 * 1080 * 4);
-
-
 			Console.WriteLine("Hello Worlde!");
+		}
+
+		public void SwapBuffer()
+		{
+			Unsafe.Copy(ref Unsafe.AsRef<byte>(FishGL.ColorBuffer.DataPtr), ref Unsafe.AsRef<byte>(FramebufferPtr), 1920 * 1080 * 4);
 		}
 
 		public void DrawRect(int X, int Y, int W, int H, Color color)

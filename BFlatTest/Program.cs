@@ -57,14 +57,18 @@ public unsafe static class Program
 			Framebuffer FB = new Framebuffer(gop);
 			FB.Init(1920, 1080);
 
-
-			Console.SetCursorPosition(0, 0);
 			Console.WriteLine("Hello 1920x1080 World!");
 
-			FB.DrawRect(100, 100, 100, 100, new Color(255, 0, 0));
-			FB.DrawRect(120, 120, 100, 100, new Color(0, 255, 0));
-			FB.DrawRect(140, 140, 100, 100, new Color(0, 0, 255));
+			FishGL.DrawColor = new Color(255, 0, 0);
+			FishGL.Rect(100, 100, 100, 100);
 
+			FishGL.DrawColor = new Color(0, 255, 0);
+			FishGL.Rect(120, 120, 100, 100);
+
+			FishGL.DrawColor = new Color(0, 0, 255);
+			FishGL.Rect(140, 140, 100, 100);
+
+			FB.SwapBuffer();
 			Console.WriteLine("Rectangles drawn!");
 		}
 
