@@ -291,17 +291,22 @@ namespace Internal.Runtime.CompilerHelpers
 
 	public struct EFI_EVENT
 	{
-		private IntPtr _event;
+		public IntPtr _event;
 	}
 
 	public struct EFI_TPL
 	{
-		private nuint _tpl;
+		public nuint _tpl;
 	}
 
 	public struct EFI_STATUS
 	{
 		private nuint _status;
+
+		public EFI_STATUS(nuint status)
+		{
+			_status = status;
+		}
 	}
 
 	public struct EFI_PHYSICAL_ADDRESS
@@ -528,6 +533,68 @@ namespace Internal.Runtime.CompilerHelpers
 		public readonly delegate* unmanaged<EFI_GRAPHICS_OUTPUT_PROTOCOL*, uint, ulong> SetMode;
 		public readonly delegate* unmanaged<EFI_GRAPHICS_OUTPUT_PROTOCOL*, EFI_GRAPHICS_OUTPUT_BLT_PIXEL*, EFI_GRAPHICS_OUTPUT_BLT_OPERATION, nuint, nuint, nuint, nuint, nuint, nuint, nuint, ulong> Blt;
 		public readonly EFI_GRAPHICS_OUTPUT_PROTOCOL_MODE* Mode;
+	}
+
+	public enum EFI_PROCESSOR_STATUS_FLAG : uint
+	{
+		PROCESSOR_AS_BSP_BIT = 0x00000001,
+		PROCESSOR_ENABLED_BIT = 0x00000002,
+		PROCESSOR_HEALTH_STATUS_BIT = 0x00000004
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_CPU_PHYSICAL_LOCATION
+	{
+		public uint Package;
+		public uint Core;
+		public uint Thread;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_CPU_PHYSICAL_LOCATION2
+	{
+		public uint Package;
+		public uint Module;
+		public uint Tile;
+		public uint Die;
+		public uint Core;
+		public uint Thread;
+	}
+
+	[StructLayout(LayoutKind.Explicit)]
+	public struct EXTENDED_PROCESSOR_INFORMATION
+	{
+		[FieldOffset(0)]
+		public EFI_CPU_PHYSICAL_LOCATION2 Location2;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_PROCESSOR_INFORMATION
+	{
+		public ulong ProcessorId;
+		public uint StatusFlag;
+		public EFI_CPU_PHYSICAL_LOCATION Location;
+		public EXTENDED_PROCESSOR_INFORMATION ExtendedInformation;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public unsafe readonly struct EFI_MP_SERVICES_PROTOCOL
+	{
+		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, nuint*, nuint*, ulong> GetNumberOfProcessors;
+		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, nuint*, EFI_PROCESSOR_INFORMATION*, ulong> GetProcessorInfo;
+		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, EFI_AP_PROCEDURE, byte, EFI_EVENT, nuint, void*, nuint**, ulong> StartupAllAPs;
+		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, EFI_AP_PROCEDURE, nuint, EFI_EVENT, nuint, void*, byte*, ulong> StartupThisAP;
+		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, nuint, byte, ulong> SwitchBSP;
+		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, nuint, byte, uint*, ulong> EnableDisableAP;
+		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, nuint*, ulong> WhoAmI;
+	}
+
+	public unsafe delegate EFI_STATUS EFI_AP_PROCEDURE(void* Buffer);
+
+	public static class EFI_MP_SERVICES
+	{
+		public const uint END_OF_CPU_LIST = 0xffffffff;
+		public const uint CPU_V2_EXTENDED_TOPOLOGY = 0x01000000; // BIT24
 	}
 }
 

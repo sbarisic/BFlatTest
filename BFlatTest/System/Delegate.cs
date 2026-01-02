@@ -46,4 +46,8 @@ namespace System
     }
 
     public abstract class MulticastDelegate : Delegate { }
+
+    public delegate void Action();
+
+    public unsafe delegate void Func1(void* arg1);
 }

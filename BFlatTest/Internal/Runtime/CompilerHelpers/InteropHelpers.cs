@@ -15,6 +15,7 @@
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 using System;
+using System.Runtime;
 using System.Runtime.InteropServices;
 
 namespace Internal.Runtime.CompilerHelpers
@@ -67,7 +68,19 @@ namespace Internal.Runtime.CompilerHelpers
             return pCell->Target;
         }
 
-        [StructLayout(LayoutKind.Sequential)]
+		public static IntPtr GetCurrentCalleeOpenStaticDelegateFunctionPointer()
+		{
+			return 0;
+		}
+
+		public static object GetCurrentCalleeDelegate<T>()
+		{
+			// temporary unblocker
+			return null!;
+		}
+
+
+		[StructLayout(LayoutKind.Sequential)]
         internal struct ModuleFixupCell
         {
             public IntPtr Handle;

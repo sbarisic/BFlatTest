@@ -44,6 +44,8 @@ public unsafe static class Program
 		//Test();
 		//Console.WriteLine();
 
+		CoreTask CT = new CoreTask(EfiSystemTable->BootServices);
+		CT.RunOnCore(Proc2, 1);
 
 
 		/*FishGL.DrawColor = new Color(255, 0, 0);
@@ -67,6 +69,16 @@ public unsafe static class Program
     {
         return ref TS;
     }*/
+
+	static EFI_STATUS Proc2(void* arg1)
+	{
+		Console.WriteLine("Hello from Proc2");
+
+		while (true)
+			;
+
+		return new EFI_STATUS(0);
+	}
 
 
 	unsafe static void Test()
