@@ -18,7 +18,7 @@ public unsafe static class Program
 
 
 	[UnmanagedCallersOnly(EntryPoint = "EfiMain2")]
-	public static int EfiMain2(IntPtr imageHandle, EFI_SYSTEM_TABLE* systemTable)
+	public static int EfiMain2(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE* systemTable)
 	{
 		systemTable->BootServices->SetWatchdogTimer(0, 0, 0, null);
 		Console.WriteLine("efi_main Hello World");
@@ -32,10 +32,10 @@ public unsafe static class Program
 			0x8E, 0x3F, 0x00, 0xA0, 0xC9, 0x69, 0x72, 0x3B
 		);
 		EFI_LOADED_IMAGE_PROTOCOL* LoadedImage = null;
-		systemTable->BootServices->HandleProtocol(new EFI_HANDLE(imageHandle), &efiLoadedImageProtocolGUID, (void**)&LoadedImage);
+		systemTable->BootServices->HandleProtocol(imageHandle, &efiLoadedImageProtocolGUID, (void**)&LoadedImage);
 		File.deviceHandle = LoadedImage->DeviceHandle;
 
-		Console.WriteLine(ToStr((nint)imageHandle));
+		Console.WriteLine(ToStr((nint)imageHandle._handle));
 		Console.WriteLine(ToStr((nint)systemTable));
 
 		//systemTable->BootServices->Stall();

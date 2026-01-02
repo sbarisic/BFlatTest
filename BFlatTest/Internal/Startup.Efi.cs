@@ -320,208 +320,112 @@ namespace Internal.Runtime.CompilerHelpers
 		public delegate* unmanaged<EFI_HANDLE, ulong> Unload;
 	}
 
-	/* TODO: Translate to C#
+	public static class EFI_FILE_MODE
+	{
+		public const ulong READ = 0x0000000000000001UL;
+		public const ulong WRITE = 0x0000000000000002UL;
+		public const ulong CREATE = 0x8000000000000000UL;
+	}
+
+	public static class EFI_FILE_ATTRIBUTE
+	{
+		public const ulong READ_ONLY = 0x0000000000000001UL;
+		public const ulong HIDDEN = 0x0000000000000002UL;
+		public const ulong SYSTEM = 0x0000000000000004UL;
+		public const ulong RESERVED = 0x0000000000000008UL;
+		public const ulong DIRECTORY = 0x0000000000000010UL;
+		public const ulong ARCHIVE = 0x0000000000000020UL;
+		public const ulong VALID_ATTR = 0x0000000000000037UL;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_FILE_IO_TOKEN
+	{
+		public EFI_EVENT Event;
+		public EFI_STATUS Status;
+		public nuint BufferSize;
+		public unsafe void* Buffer;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public unsafe readonly struct EFI_FILE_PROTOCOL
+	{
+		public readonly ulong Revision;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, EFI_FILE_PROTOCOL**, char*, ulong, ulong, ulong> Open;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, ulong> Close;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, ulong> Delete;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, nuint*, void*, ulong> Read;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, nuint*, void*, ulong> Write;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, ulong*, ulong> GetPosition;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, ulong, ulong> SetPosition;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, EFI_GUID*, nuint*, void*, ulong> GetInfo;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, EFI_GUID*, nuint, void*, ulong> SetInfo;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, ulong> Flush;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, EFI_FILE_PROTOCOL**, char*, ulong, ulong, EFI_FILE_IO_TOKEN*, ulong> OpenEx;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, EFI_FILE_IO_TOKEN*, ulong> ReadEx;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, EFI_FILE_IO_TOKEN*, ulong> WriteEx;
+		public readonly delegate* unmanaged<EFI_FILE_PROTOCOL*, EFI_FILE_IO_TOKEN*, ulong> FlushEx;
+	}
+
+	[StructLayout(LayoutKind.Sequential)]
+	public unsafe readonly struct EFI_SIMPLE_FILE_SYSTEM_PROTOCOL
+	{
+		public readonly ulong Revision;
+		public readonly delegate* unmanaged<EFI_SIMPLE_FILE_SYSTEM_PROTOCOL*, EFI_FILE_PROTOCOL**, ulong> OpenVolume;
+	}
+
+	/* // TODO: Translate to C#
 	 
-	 typedef
-EFI_STATUS
-(EFIAPI *EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_OPEN_VOLUME)(
-  IN EFI_SIMPLE_FILE_SYSTEM_PROTOCOL    *This,
-  OUT EFI_FILE_PROTOCOL                 **Root
-  );
-
-	struct _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL {
-  ///
-  /// The version of the EFI_SIMPLE_FILE_SYSTEM_PROTOCOL. The version
-  /// specified by this specification is 0x00010000. All future revisions
-  /// must be backwards compatible.
-  ///
-  UINT64                                         Revision;
-  EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_OPEN_VOLUME    OpenVolume;
-};
-	 
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_OPEN)(
-  IN EFI_FILE_PROTOCOL        *This,
-  OUT EFI_FILE_PROTOCOL       **NewHandle,
-  IN CHAR16                   *FileName,
-  IN UINT64                   OpenMode,
-  IN UINT64                   Attributes
-  );
-
-//
-// Open modes
-//
-#define EFI_FILE_MODE_READ    0x0000000000000001ULL
-#define EFI_FILE_MODE_WRITE   0x0000000000000002ULL
-#define EFI_FILE_MODE_CREATE  0x8000000000000000ULL
-
-//
-// File attributes
-//
-#define EFI_FILE_READ_ONLY   0x0000000000000001ULL
-#define EFI_FILE_HIDDEN      0x0000000000000002ULL
-#define EFI_FILE_SYSTEM      0x0000000000000004ULL
-#define EFI_FILE_RESERVED    0x0000000000000008ULL
-#define EFI_FILE_DIRECTORY   0x0000000000000010ULL
-#define EFI_FILE_ARCHIVE     0x0000000000000020ULL
-#define EFI_FILE_VALID_ATTR  0x0000000000000037ULL
-
-
-typedef
-EFI_STATUS
-(EFIAPI* EFI_FILE_CLOSE)(
-  IN EFI_FILE_PROTOCOL  * This
-  );
-
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_DELETE)(
-  IN EFI_FILE_PROTOCOL  *This
-  );
-
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_READ)(
-  IN EFI_FILE_PROTOCOL        *This,
-  IN OUT UINTN                *BufferSize,
-  OUT VOID                    *Buffer
-  );
-
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_WRITE)(
-  IN EFI_FILE_PROTOCOL        *This,
-  IN OUT UINTN                *BufferSize,
-  IN VOID                     *Buffer
-  );
-
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_SET_POSITION)(
-  IN EFI_FILE_PROTOCOL        *This,
-  IN UINT64                   Position
-  );
-
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_GET_POSITION)(
-  IN EFI_FILE_PROTOCOL        *This,
-  OUT UINT64                  *Position
-  );
-
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_GET_INFO)(
-  IN EFI_FILE_PROTOCOL        *This,
-  IN EFI_GUID                 *InformationType,
-  IN OUT UINTN                *BufferSize,
-  OUT VOID                    *Buffer
-  );
-
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_SET_INFO)(
-  IN EFI_FILE_PROTOCOL        *This,
-  IN EFI_GUID                 *InformationType,
-  IN UINTN                    BufferSize,
-  IN VOID                     *Buffer
-  );
-
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_FLUSH)(
-  IN EFI_FILE_PROTOCOL  *This
-  );
-
 	typedef struct {
-  //
-  // If Event is NULL, then blocking I/O is performed.
-  // If Event is not NULL and non-blocking I/O is supported, then non-blocking I/O is performed,
-  // and Event will be signaled when the read request is completed.
-  // The caller must be prepared to handle the case where the callback associated with Event
-  // occurs before the original asynchronous I/O request call returns.
-  //
-  EFI_EVENT     Event;
+  UINT16  Year;
+  UINT8   Month;
+  UINT8   Day;
+  UINT8   Hour;
+  UINT8   Minute;
+  UINT8   Second;
+  UINT8   Pad1;
+  UINT32  Nanosecond;
+  INT16   TimeZone;
+  UINT8   Daylight;
+  UINT8   Pad2;
+} EFI_TIME;
 
-  //
-  // Defines whether or not the signaled event encountered an error.
-  //
-  EFI_STATUS    Status;
-
-  //
-  // For OpenEx():  Not Used, ignored.
-  // For ReadEx():  On input, the size of the Buffer. On output, the amount of data returned in Buffer.
-  //                In both cases, the size is measured in bytes.
-  // For WriteEx(): On input, the size of the Buffer. On output, the amount of data actually written.
-  //                In both cases, the size is measured in bytes.
-  // For FlushEx(): Not used, ignored.
-  //
-  UINTN    BufferSize;
-
-  //
-  // For OpenEx():  Not Used, ignored.
-  // For ReadEx():  The buffer into which the data is read.
-  // For WriteEx(): The buffer of data to write.
-  // For FlushEx(): Not Used, ignored.
-  //
-  VOID     *Buffer;
-} EFI_FILE_IO_TOKEN;
-
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_OPEN_EX)(
-  IN EFI_FILE_PROTOCOL        *This,
-  OUT EFI_FILE_PROTOCOL       **NewHandle,
-  IN CHAR16                   *FileName,
-  IN UINT64                   OpenMode,
-  IN UINT64                   Attributes,
-  IN OUT EFI_FILE_IO_TOKEN    *Token
-  );
-
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_READ_EX)(
-  IN EFI_FILE_PROTOCOL        *This,
-  IN OUT EFI_FILE_IO_TOKEN    *Token
-  );
-
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_WRITE_EX)(
-  IN EFI_FILE_PROTOCOL        *This,
-  IN OUT EFI_FILE_IO_TOKEN    *Token
-  );
-
-	typedef
-EFI_STATUS
-(EFIAPI *EFI_FILE_FLUSH_EX)(
-  IN EFI_FILE_PROTOCOL        *This,
-  IN OUT EFI_FILE_IO_TOKEN    *Token
-  );
-
-	struct _EFI_FILE_PROTOCOL {
+	 typedef struct {
   ///
-  /// The version of the EFI_FILE_PROTOCOL interface. The version specified
-  /// by this specification is EFI_FILE_PROTOCOL_LATEST_REVISION.
-  /// Future versions are required to be backward compatible to version 1.0.
+  /// The size of the EFI_FILE_INFO structure, including the Null-terminated FileName string.
   ///
-  UINT64                   Revision;
-  EFI_FILE_OPEN            Open;
-  EFI_FILE_CLOSE           Close;
-  EFI_FILE_DELETE          Delete;
-  EFI_FILE_READ            Read;
-  EFI_FILE_WRITE           Write;
-  EFI_FILE_GET_POSITION    GetPosition;
-  EFI_FILE_SET_POSITION    SetPosition;
-  EFI_FILE_GET_INFO        GetInfo;
-  EFI_FILE_SET_INFO        SetInfo;
-  EFI_FILE_FLUSH           Flush;
-  EFI_FILE_OPEN_EX         OpenEx;
-  EFI_FILE_READ_EX         ReadEx;
-  EFI_FILE_WRITE_EX        WriteEx;
-  EFI_FILE_FLUSH_EX        FlushEx;
-};
+  UINT64      Size;
+  ///
+  /// The size of the file in bytes.
+  ///
+  UINT64      FileSize;
+  ///
+  /// PhysicalSize The amount of physical space the file consumes on the file system volume.
+  ///
+  UINT64      PhysicalSize;
+  ///
+  /// The time the file was created.
+  ///
+  EFI_TIME    CreateTime;
+  ///
+  /// The time when the file was last accessed.
+  ///
+  EFI_TIME    LastAccessTime;
+  ///
+  /// The time when the file's contents were last modified.
+  ///
+  EFI_TIME    ModificationTime;
+  ///
+  /// The attribute bits for the file.
+  ///
+  UINT64      Attribute;
+  ///
+  /// The Null-terminated name of the file.
+  /// For a root directory, the name is an empty string.
+  ///
+  CHAR16      FileName[1];
+} EFI_FILE_INFO;
+
 	 */
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -572,6 +476,16 @@ EFI_STATUS
 		public readonly delegate* unmanaged<void*, void*, nuint, void> CopyMem;
 		public readonly delegate* unmanaged<void*, nuint, byte, void> SetMem;
 		public readonly delegate* unmanaged<uint, EFI_TPL, delegate* unmanaged<EFI_EVENT, void*, void>, void*, EFI_GUID*, EFI_EVENT*, ulong> CreateEventEx;
+	}
+
+	public static class EFI_OPEN_PROTOCOL
+	{
+		public const uint BY_HANDLE_PROTOCOL = 0x00000001;
+		public const uint GET_PROTOCOL = 0x00000002;
+		public const uint TEST_PROTOCOL = 0x00000004;
+		public const uint BY_CHILD_CONTROLLER = 0x00000008;
+		public const uint BY_DRIVER = 0x00000010;
+		public const uint EXCLUSIVE = 0x00000020;
 	}
 
 	public enum EFI_GRAPHICS_PIXEL_FORMAT

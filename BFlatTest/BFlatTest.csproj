@@ -24,7 +24,6 @@
 	<ItemGroup>
 		<Folder Include="System\Collections\" />
 		<Folder Include="System\Linq\" />
-		<Folder Include="System\IO\" />
 		<Folder Include="System\Threading\" />
 		<Folder Include="System\Threading\Tasks\" />
 		<Folder Include="System\Text\" />

@@ -99,7 +99,9 @@ namespace System
 			return Utils.NumToDecString((long)this);
 		}
 	}
-	public struct IntPtr { }
+	public struct IntPtr {
+		public static readonly IntPtr Zero = new IntPtr();
+	}
 	public struct UIntPtr { }
 	public struct Single { }
 	public struct Double { }
