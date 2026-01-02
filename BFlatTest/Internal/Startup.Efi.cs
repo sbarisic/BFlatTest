@@ -20,6 +20,7 @@ using System;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Internal.Runtime.CompilerHelpers
 {
@@ -254,6 +255,27 @@ namespace Internal.Runtime.CompilerHelpers
 		public ushort Data2;
 		public ushort Data3;
 		public unsafe fixed byte Data4[8];
+
+		public EFI_GUID(uint d1, ushort d2, ushort d3, byte b0, byte b1, byte b2, byte b3, byte b4, byte b5, byte b6, byte b7)
+		{
+			Data1 = d1;
+			Data2 = d2;
+			Data3 = d3;
+			unsafe
+			{
+				fixed (byte* pData4 = Data4)
+				{
+					pData4[0] = b0;
+					pData4[1] = b1;
+					pData4[2] = b2;
+					pData4[3] = b3;
+					pData4[4] = b4;
+					pData4[5] = b5;
+					pData4[6] = b6;
+					pData4[7] = b7;
+				}
+			}
+		}
 	}
 
 	public struct EFI_EVENT
@@ -275,6 +297,58 @@ namespace Internal.Runtime.CompilerHelpers
 	{
 		public ulong _address;
 	}
+
+	/* // TODO: translate to C#
+	 * typedef struct {
+  UINT8 Type;       ///< 0x01 Hardware Device Path.
+                    ///< 0x02 ACPI Device Path.
+                    ///< 0x03 Messaging Device Path.
+                    ///< 0x04 Media Device Path.
+                    ///< 0x05 BIOS Boot Specification Device Path.
+                    ///< 0x7F End of Hardware Device Path.
+
+  UINT8 SubType;    ///< Varies by Type
+                    ///< 0xFF End Entire Device Path, or
+                    ///< 0x01 End This Instance of a Device Path and start a new
+                    ///< Device Path.
+
+  UINT8 Length[2];  ///< Specific Device Path data. Type and Sub-Type define
+                    ///< type of data. Size of data is included in Length.
+
+} EFI_DEVICE_PATH_PROTOCOL;
+
+	typedef struct {
+		UINT32 Revision;     ///< Defines the revision of the EFI_LOADED_IMAGE_PROTOCOL structure.
+							 ///< All future revisions will be backward compatible to the current revision.
+		EFI_HANDLE ParentHandle; ///< Parent image's image handle. NULL if the image is loaded directly from
+								 ///< the firmware's boot manager.
+		EFI_SYSTEM_TABLE* SystemTable; ///< the image's EFI system table pointer.
+
+		//
+		// Source location of image
+		//
+		EFI_HANDLE DeviceHandle; ///< The device handle that the EFI Image was loaded from.
+		EFI_DEVICE_PATH_PROTOCOL* FilePath;    ///< A pointer to the file path portion specific to DeviceHandle
+											   ///< that the EFI Image was loaded from.
+		VOID* Reserved;    ///< Reserved. DO NOT USE.
+
+		//
+		// Images load options
+		//
+		UINT32 LoadOptionsSize; ///< The size in bytes of LoadOptions.
+		VOID* LoadOptions;    ///< A pointer to the image's binary load options.
+
+		//
+		// Location of where image was loaded
+		//
+		VOID* ImageBase;    ///< The base address at which the image was loaded.
+		UINT64 ImageSize;     ///< The size in bytes of the loaded image.
+		EFI_MEMORY_TYPE ImageCodeType; ///< The memory type that the code sections were loaded as.
+		EFI_MEMORY_TYPE ImageDataType; ///< The memory type that the data sections were loaded as.
+		EFI_IMAGE_UNLOAD Unload;
+	}
+	EFI_LOADED_IMAGE_PROTOCOL;
+	*/
 
 	[StructLayout(LayoutKind.Sequential)]
 	public unsafe readonly struct EFI_BOOT_SERVICES

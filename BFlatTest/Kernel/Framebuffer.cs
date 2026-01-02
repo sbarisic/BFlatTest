@@ -1,6 +1,7 @@
 ﻿using Fish;
 using Internal.Runtime.CompilerHelpers;
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace Kernel
@@ -102,6 +103,10 @@ namespace Kernel
 			FishGL.Line(300, 250, 800, 400);
 
 			Console.WriteLine("Hello Worlde!");
+
+			byte[] imgBytes = File.ReadAllBytes("img.bin");
+
+			Console.WriteLine("File read!");
 		}
 
 		public void SwapBuffer()
