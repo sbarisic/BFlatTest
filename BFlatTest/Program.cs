@@ -41,8 +41,10 @@ public unsafe static class Program
 		//FB.Init(1920, 1080);
 		FB.Init(1280, 720);
 		Console.WriteLine();
-		Test();
-		Console.WriteLine();
+		//Test();
+		//Console.WriteLine();
+
+
 
 		/*FishGL.DrawColor = new Color(255, 0, 0);
         FishGL.Rect(100, 100, 100, 100);
@@ -87,9 +89,9 @@ public unsafe static class Program
 
 		return;*/
 
-		MethodTable i = new MethodTable();
-		Console.Print("MethodTable len - ", Utils.PtrToHexString(sizeof(MethodTable)));
-		i.PrintMethodTable();
+		//MethodTable i = new MethodTable();
+		//Console.Print("MethodTable len - ", Utils.PtrToHexString(sizeof(MethodTable)));
+		//i.PrintMethodTable();
 
 		Console.Print("typeof(string) - ", typeof(string).ToString());
 		Console.Print("typeof(IntPtr) - ", typeof(IntPtr).ToString());

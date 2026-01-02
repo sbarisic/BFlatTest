@@ -50,6 +50,14 @@ namespace Internal.Runtime.CompilerHelpers
 			return new RuntimeTypeHandle((nint)mt);
 		}
 
+		[RuntimeExport("RhpNewFinalizable")]
+		static unsafe void* RhpNewFinalizable(Internal.Runtime.MethodTable* pMT)
+		{
+			Internal.Runtime.MethodTable** result = AllocObject(pMT->_uBaseSize);
+			*result = pMT;
+			return result;
+		}
+
 		[RuntimeExport("RhpNewFast")]
 		static unsafe void* RhpNewFast(Internal.Runtime.MethodTable* pMT)
 		{
