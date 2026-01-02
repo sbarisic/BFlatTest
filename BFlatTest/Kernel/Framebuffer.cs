@@ -96,18 +96,18 @@ namespace Kernel
             if (FramebufferPtr == null)
                 Console.WriteLine("FramebufferPtr is null");
             else
-                Console.Print("Framebuffer ", Utils.PtrToHexString((nint)FramebufferPtr), ", Size ", (ulong)FramebufferSize, ", PixelsPerScanLine ", PixelsPerScanLine, ", Bpp ", Bpp);
+            {
+                Console.Print("Framebuffer ", Utils.PtrToHexString((nint)FramebufferPtr), ", Size ", (ulong)FramebufferSize, ", Bpp ", Bpp);
+                Console.Print("Width: ", Width, ", Height: ", Height);
+            }
 
             //Unsafe.InitBlockUnaligned(ref Unsafe.AsRef<byte>(FramebufferPtr), 0xFF, 1920);
-            DrawRect(50, 50, 200, 200, new Color(255, 0, 0, 0));
+            //DrawRect(50, 50, 60, 60, new Color(255, 0, 0, 0));
 
-            Console.SetCursorPosition(0, 0);
-            Console.WriteLine("FishGL now!");
-
-            Console.WriteLine("Color buffer!");
+            Console.Write("FishGL init ... ");
             FishGL.ColorBuffer = new FGLFramebuffer(Width, Height);
             FishGL.DepthBuffer = new FGLFramebuffer(Width, Height);
-            //FishGL.Fill(ref FishGL.ColorBuffer, new FGLColor(0, 0, 0));
+            FishGL.Fill(ref FishGL.ColorBuffer, new FGLColor(0, 0, 0));
 
             /*FishGL.Fill(ref FishGL.ColorBuffer, new FGLColor(88, 104, 115));
 
@@ -117,18 +117,8 @@ namespace Kernel
             FishGL.DrawColor = FGLColor.Black;
             FishGL.Line(300, 250, 800, 400);*/
 
-            Console.WriteLine("Hello Worlde!");
+            Console.WriteLine("OK");
 
-            string fileText = File.ReadAllText("img.bin");
-
-            if (fileText == null)
-                Console.WriteLine("fileText is NULL");
-            else
-            {
-                Console.Print("File read! ", fileText.Length, " chars");
-
-                Console.WriteLine(fileText);
-            }
         }
 
         public void SwapBuffer()

@@ -20,6 +20,7 @@ public unsafe static class Program
     public static int EfiMain2(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE* systemTable)
     {
         systemTable->BootServices->SetWatchdogTimer(0, 0, 0, null);
+        Console.SetCursorPosition(0, 0);
         Console.WriteLine("efi_main Hello World");
         File.EfiInit(imageHandle, systemTable);
 
@@ -31,10 +32,19 @@ public unsafe static class Program
             return 1;
         }
 
+        string fileText = File.ReadAllText("img.bin");
+        if (fileText == null)
+            Console.WriteLine("fileText is NULL");
+        else
+        {
+            Console.Print("File read! ", fileText.Length, " chars");
+            Console.WriteLine(fileText);
+        }
+
 
         //FB.Init(1920, 1080);
         FB.Init(1280, 720);
-        Console.Print("Hello ", FB.Width, "x", FB.Height, " World!");
+        Test();
 
         /*FishGL.DrawColor = new Color(255, 0, 0);
         FishGL.Rect(100, 100, 100, 100);
@@ -43,12 +53,17 @@ public unsafe static class Program
         FishGL.Rect(120, 120, 100, 100);
 
         FishGL.DrawColor = new Color(0, 0, 255);
-        FishGL.Rect(140, 140, 100, 100);*/
+        FishGL.Rect(140, 140, 100, 100);
 
 
-        Console.WriteLine("Rectangles drawn!");
         FB.SwapBuffer();
+        Console.WriteLine("Rectangles drawn!");*/
         return 0;
+    }
+
+    static void Test()
+    {
+        Console.WriteLine("Test!");
     }
 }
 
