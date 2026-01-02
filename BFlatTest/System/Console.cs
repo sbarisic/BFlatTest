@@ -49,14 +49,18 @@ namespace System
 				Console.Write(s[i]);
 		}
 
-		public static void WriteLine(string s)
+		public static void WriteLine()
 		{
-			Write(s);
-
 #if WINDOWS || UEFI
 			Console.Write('\r');
 #endif
 			Console.Write('\n');
+		}
+
+		public static void WriteLine(string s)
+		{
+			Write(s);
+			WriteLine();
 		}
 
 		public static void Write(int i)
@@ -88,11 +92,7 @@ namespace System
 		public static void WriteLine(int i)
 		{
 			Write(i);
-
-#if WINDOWS || UEFI
-			Console.Write('\r');
-#endif
-			Console.Write('\n');
+			WriteLine();
 		}
 
 		public static void Print(string Str)
@@ -107,7 +107,7 @@ namespace System
 				Write(Args[i].ToString());
 			}
 
-			WriteLine("");
+			WriteLine();
 		}
 	}
 }

@@ -14,9 +14,81 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using Internal.Runtime;
+
 namespace System
 {
-    public class Type { }
+	internal class TypeDesc
+	{
+		public RuntimeTypeHandle runtimeTypeHandle;
+	}
 
-    public class RuntimeType : Type { }
+	public unsafe class Type
+	{
+		internal MethodTable* _mt;
+
+		public static Type GetTypeFromHandle(RuntimeTypeHandle handle)
+		{
+			MethodTable* mt = (MethodTable*)(handle.Value);
+
+			//return TypeInternal.GetOrCreateType(mt);
+			return new RuntimeType(mt);
+		}
+
+		public override string ToString()
+		{
+			//Console.Print("    flags: ", Utils.PtrToHexString(_mt->_usFlags));
+
+			//if (this == typeof(object))
+			//	return "object";
+
+			return "Type_" + Utils.PtrToHexString((nint)_mt);
+		}
+
+		public override bool Equals(object obj)
+		{
+			//Console.WriteLine("Equals!");
+			//Console.Print("this - ", GetType().ToString());
+			//Console.Print("obj - ", GetType().ToString());
+
+			if (obj is Type other)
+			{
+				return this._mt == other._mt;
+			}
+			else if (obj is RuntimeType rt)
+			{
+				return this._mt == rt._mt;
+			}
+
+			return base.Equals(obj);
+		}
+	}
+
+	public unsafe class RuntimeType : Type
+	{
+		internal RuntimeType(MethodTable* mt)
+		{
+			if (mt != null)
+				this._mt = mt->_uBaseType;
+		}
+	}
+
+	internal static unsafe class TypeInternal
+	{
+		private static RuntimeType[] typeCache = new RuntimeType[1024]; // grow later
+
+		public static RuntimeType GetOrCreateType(MethodTable* mt)
+		{
+			// trivial hash for now — align/pad later
+			int index = ((int)(nuint)mt) & (typeCache.Length - 1);
+
+			var existing = typeCache[index];
+			if (existing != null && existing._mt == mt)
+				return existing;
+
+			var t = new RuntimeType(mt);
+			typeCache[index] = t;
+			return t;
+		}
+	}
 }

@@ -4,23 +4,27 @@ namespace System
 {
 	public unsafe class Utils
 	{
-		public static unsafe string PtrToHexString(nint value)
+		public static unsafe string PtrToHexString(nint value, bool addPrefix = true, int minLen = 0)
 		{
 			const string hex = "0123456789ABCDEF";
 			char* buf = stackalloc char[2 + 16 + 1];
 
-			buf[0] = '0';
-			buf[1] = 'x';
+			int idx = 0;
+
+			if (addPrefix)
+			{
+				buf[idx++] = '0';
+				buf[idx++] = 'x';
+			}
 
 			ulong v = (ulong)value;
 
 			bool started = false;
-			int idx = 2;
 
 			for (int i = 15; i >= 0; i--)
 			{
 				int digit = (int)((v >> (i * 4)) & 0xF);
-				if (digit != 0 || started || i == 0)
+				if (digit != 0 || started || i == minLen)
 				{
 					started = true;
 					buf[idx++] = hex[digit];

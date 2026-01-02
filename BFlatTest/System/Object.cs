@@ -14,42 +14,80 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Runtime;
+using Internal.Runtime;
 using System.Runtime.CompilerServices;
 
 namespace System
 {
-	public partial class Object
+	public unsafe partial class Object
 	{
-#pragma warning disable 169
 		// The layout of object is a contract with the compiler.
-		internal unsafe MethodTable* m_pMethodTable;
-#pragma warning restore 169
+		internal MethodTable* m_pMethodTable;
 
-		public virtual unsafe Type GetType()
+		public void PrintMethodTable()
+		{
+			int Sz = sizeof(MethodTable);
+			byte* ptr = (byte*)m_pMethodTable;
+
+			int j = 0;
+			Console.Write("0 ");
+			for (int i = 0; i < Sz; i++)
+			{
+				Console.Write(Utils.PtrToHexString((nint)ptr[i], false, 1) + " ");
+				j++;
+
+				if (j == 4)
+					Console.Write("  ");
+
+				if (j >= 8)
+				{
+					Console.WriteLine();
+					j = 0;
+
+					Console.Write((i / 8 + 1).ToString() + " ");
+				}
+			}
+			Console.WriteLine();
+
+			//Console.Print("MethodTable ptr: ", sizeof(MethodTable));
+		}
+
+		public virtual Type GetType()
 		{
 			MethodTable* mt = m_pMethodTable;
 			if (mt == null)
 				return null;
 
-			RuntimeType* runtimeType = (RuntimeType*)mt->_writableData;
-
-			if (runtimeType == null)
-				return null;
-		
-			return Unsafe.AsRef<RuntimeType>(runtimeType);
-
-			//return null;
+			return new RuntimeType(mt);
 		}
 
-		public virtual unsafe string ToString()
+		public virtual string ToString()
 		{
-			/*Type TT = GetType();
-
-			if (TT == null)
-				return "object (no type)";*/
-
 			return "object";
+		}
+
+		public virtual bool Equals(object obj)
+		{
+			// Compare references: true if the same object
+			return ReferenceEquals(this, obj);
+		}
+
+		public static bool ReferenceEquals(object a, object b)
+		{
+			Console.WriteLine("Reference equals!");
+			void* pa = Unsafe.AsPointer(ref a);
+			void* pb = Unsafe.AsPointer(ref b);
+			return pa == pb;
+		}
+
+		public static bool operator ==(object a, object b)
+		{
+			return a.Equals(b);
+		}
+
+		public static bool operator !=(object a, object b)
+		{
+			return !a.Equals(b);
 		}
 	}
 }

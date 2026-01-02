@@ -1,17 +1,35 @@
 ﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace FishFormats
 {
+	[StructLayout(LayoutKind.Sequential, Pack = 1)]
 	public unsafe struct FishImage
 	{
+		public fixed byte Magic[6];
 		public fixed byte Name[128];
 		public uint Width;
 		public uint Height;
 		public uint PixelDataLength;
 		public byte[] PixelData;
+
+		public int CalcLength()
+		{
+			return 6 + 128 + sizeof(uint) + sizeof(uint) + sizeof(uint) + (int)PixelDataLength;
+		}
+		/*
+				public void SaveToArray(ref byte[] Arr)
+				{
+
+					for (int i = 0; i < 128; i++)
+					{
+						Arr[i] = Name[i];
+					}
+				}*/
 	}
 
 	internal unsafe class Program
@@ -20,6 +38,14 @@ namespace FishFormats
 		{
 			FishImage Img = ConvertPNG("in/boot.png");
 
+			int Len = Img.CalcLength();
+			FishImage* ImgPtr = &Img;
+
+			byte[] Raw = new byte[Len];
+			for (int i = 0; i < Raw.Length; i++)
+			{
+				Raw[i] = ((byte*)ImgPtr)[i];
+			}
 		}
 
 		static FishImage ConvertPNG(string InFile)
@@ -51,10 +77,11 @@ namespace FishFormats
 				{
 					for (int y = 0; y < height; y++)
 					{
-						Span<Rgba32> pixelRow = image.GetPixelRowSpan(y);
 						for (int x = 0; x < width; x++)
 						{
-							((Rgba32*)pixelDataPtr)[(y * width + x)] = pixelRow[x];
+							Rgba32 RGBA = image[x, y];
+
+							((Rgba32*)pixelDataPtr)[(y * width + x)] = RGBA;
 						}
 					}
 				}

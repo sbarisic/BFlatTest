@@ -18,13 +18,31 @@ namespace System
 {
     public struct RuntimeTypeHandle
     {
-    }
+		public nint Value;
+
+        public RuntimeTypeHandle(nint Val)
+        {
+            Value = Val;
+        }
+	}
 
     public struct RuntimeMethodHandle
-    {
-    }
+	{
+		public nint Value;
+
+		public RuntimeMethodHandle(nint Val)
+		{
+			Value = Val;
+		}
+	}
 
     public struct RuntimeFieldHandle
-    {
-    }
+	{
+		public nint Value;
+
+		public RuntimeFieldHandle(nint Val)
+		{
+			Value = Val;
+		}
+	}
 }

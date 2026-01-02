@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using System.Runtime;
+using Internal.Runtime;
 using System.Runtime.CompilerServices;
 
 namespace System
@@ -87,8 +87,8 @@ namespace System
 			return NewString("".m_pMethodTable, numChars);
 
 			[MethodImpl(MethodImplOptions.InternalCall)]
-			[RuntimeImport("*", "RhpNewArray")]
-			static extern string NewString(MethodTable* pMT, int numElements);
+			[System.Runtime.RuntimeImport("*", "RhpNewArray")]
+			static extern string NewString(Internal.Runtime.MethodTable* pMT, int numElements);
 		}
 
 		public override String ToString()

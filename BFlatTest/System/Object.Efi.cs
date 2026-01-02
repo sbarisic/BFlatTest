@@ -24,9 +24,16 @@ namespace System
     {
         private static void* s_efiSystemTable;
 
+        private static EFI_HANDLE efiImageHandle;
+
         internal static EFI_SYSTEM_TABLE* EfiSystemTable => (EFI_SYSTEM_TABLE*)s_efiSystemTable;
-        internal static void SetEfiSystemTable(EFI_SYSTEM_TABLE* t) => s_efiSystemTable = t;
-    }
+
+        internal static EFI_HANDLE EfiImageHandle => efiImageHandle;
+
+		internal static void SetEfiSystemTable(EFI_SYSTEM_TABLE* t) => s_efiSystemTable = t;
+
+		internal static void SetEfiImageHandle(EFI_HANDLE t) => efiImageHandle = t;
+	}
 }
 
 #endif

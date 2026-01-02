@@ -17,6 +17,7 @@
 #if UEFI
 
 using System;
+using System.IO;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -29,15 +30,21 @@ namespace Internal.Runtime.CompilerHelpers
 		//[MethodImpl(MethodImplOptions.InternalCall)]
 		//static extern int ManagedMain(int argc, char** argv);
 
-		[RuntimeImport("*", "EfiMain2")]
+		[RuntimeImport("*", "__managed__Main")]
 		[MethodImpl(MethodImplOptions.InternalCall)]
-		static extern int ManagedMain(IntPtr imageHandle, EFI_SYSTEM_TABLE* systemTable);
+		static extern int ManagedMain();
 
 		[RuntimeExport("EfiMain")]
 		static long EfiMain(IntPtr imageHandle, EFI_SYSTEM_TABLE* systemTable)
 		{
 			SetEfiSystemTable(systemTable);
-			ManagedMain(imageHandle, systemTable);
+			EFI_HANDLE imgHandle = new EFI_HANDLE(imageHandle);
+			SetEfiImageHandle(imgHandle);
+
+			systemTable->BootServices->SetWatchdogTimer(0, 0, 0, null);
+			File.EfiInit(imgHandle, systemTable);
+
+			ManagedMain();
 
 			while (true) ;
 		}

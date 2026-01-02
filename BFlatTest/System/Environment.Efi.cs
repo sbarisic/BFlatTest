@@ -21,46 +21,50 @@ using Internal.Runtime.CompilerHelpers;
 
 namespace System
 {
-    public static unsafe partial class Environment
-    {
-        public unsafe static void FailFast(string message)
-        {
-            fixed (char* pMessage = message ?? "FailFast")
-            {
-                EfiSystemTable->ConOut->OutputString(EfiSystemTable->ConOut, pMessage);
-            }
-            while (true) ;
-        }
+	public static unsafe partial class Environment
+	{
+		public unsafe static void FailFast(string message)
+		{
+			fixed (char* pMessage = message ?? "FailFast")
+			{
+				EfiSystemTable->ConOut->OutputString(EfiSystemTable->ConOut, pMessage);
+			}
 
-        static internal long s_lastTickCount;
-        static internal long s_stallSinceLastTickCount;
+			fixed (char* pMessage2 = "\r\n")
+				EfiSystemTable->ConOut->OutputString(EfiSystemTable->ConOut, pMessage2);
 
-        public static unsafe long TickCount64
-        {
-            get
-            {
-                EFI_TIME time;
-                EfiSystemTable->RuntimeServices->GetTime(&time, null);
-                long days = time.Year * 365 + time.Month * 31 + time.Day;
-                long seconds = days * 24 * 60 * 60 + time.Hour * 60 * 60 + time.Minute * 60 + time.Second;
-                long milliseconds = seconds * 1000 + time.Nanosecond / 1000000;
+			while (true) ;
+		}
 
-                // HACK: some systems will report a zero Nanosecond part. We keep track of Stall getting
-                // previously called with the same tickcount and artificially inflate the tick count
-                // by the amount of stall if it occured within the same TickCount.
-                if (s_lastTickCount == milliseconds)
-                {
-                    milliseconds += s_stallSinceLastTickCount;
-                }
-                else
-                {
-                    s_lastTickCount = milliseconds;
-                    s_stallSinceLastTickCount = 0;
-                }
-                return milliseconds;
-            }
-        }
-    }
+		static internal long s_lastTickCount;
+		static internal long s_stallSinceLastTickCount;
+
+		public static unsafe long TickCount64
+		{
+			get
+			{
+				EFI_TIME time;
+				EfiSystemTable->RuntimeServices->GetTime(&time, null);
+				long days = time.Year * 365 + time.Month * 31 + time.Day;
+				long seconds = days * 24 * 60 * 60 + time.Hour * 60 * 60 + time.Minute * 60 + time.Second;
+				long milliseconds = seconds * 1000 + time.Nanosecond / 1000000;
+
+				// HACK: some systems will report a zero Nanosecond part. We keep track of Stall getting
+				// previously called with the same tickcount and artificially inflate the tick count
+				// by the amount of stall if it occured within the same TickCount.
+				if (s_lastTickCount == milliseconds)
+				{
+					milliseconds += s_stallSinceLastTickCount;
+				}
+				else
+				{
+					s_lastTickCount = milliseconds;
+					s_stallSinceLastTickCount = 0;
+				}
+				return milliseconds;
+			}
+		}
+	}
 }
 
 #endif
