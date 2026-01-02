@@ -16,17 +16,7 @@ namespace System.IO
 			// 1. Locate the filesystem of the loaded image
 			EFI_HANDLE fsHandle = deviceHandle;
 			EFI_SIMPLE_FILE_SYSTEM_PROTOCOL* fs;
-			EFI_GUID sfsguid = new EFI_GUID();
-
-			sfsguid.Data1 = 0x0964e5b22;
-			sfsguid.Data2 = 0x6459;
-			sfsguid.Data3 = 0x11e4;
-			byte[] Data4Bytes = new byte[] { 0x9a, 0x5b, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d };
-			for (int i = 0; i < 8; i++)
-			{
-				sfsguid.Data4[i] = Data4Bytes[i];
-			}
-
+			EFI_GUID sfsguid = new EFI_GUID(0x964e5b22, 0x6459, 0x11d2, , 0x8e, 0x39, 0x0, 0xa0, 0xc9, 0x69, 0x72, 0x3b);
 			bootServices->OpenProtocol(fsHandle, sfsguid, &fs);
 
 			// 2. Open the root volume

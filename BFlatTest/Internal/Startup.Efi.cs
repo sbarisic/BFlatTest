@@ -20,7 +20,6 @@ using System;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Internal.Runtime.CompilerHelpers
 {
@@ -57,7 +56,12 @@ namespace Internal.Runtime.CompilerHelpers
 	[StructLayout(LayoutKind.Sequential)]
 	public struct EFI_HANDLE
 	{
-		private IntPtr _handle;
+		public IntPtr _handle;
+
+		public EFI_HANDLE(IntPtr handle)
+		{
+			_handle = handle;
+		}
 	}
 
 	[StructLayout(LayoutKind.Sequential)]
@@ -298,57 +302,227 @@ namespace Internal.Runtime.CompilerHelpers
 		public ulong _address;
 	}
 
-	/* // TODO: translate to C#
-	 * typedef struct {
-  UINT8 Type;       ///< 0x01 Hardware Device Path.
-                    ///< 0x02 ACPI Device Path.
-                    ///< 0x03 Messaging Device Path.
-                    ///< 0x04 Media Device Path.
-                    ///< 0x05 BIOS Boot Specification Device Path.
-                    ///< 0x7F End of Hardware Device Path.
+	[StructLayout(LayoutKind.Sequential)]
+	public unsafe struct EFI_LOADED_IMAGE_PROTOCOL
+	{
+		public uint Revision;
+		public EFI_HANDLE ParentHandle;
+		public EFI_SYSTEM_TABLE* SystemTable;
+		public EFI_HANDLE DeviceHandle;
+		public EFI_DEVICE_PATH_PROTOCOL* FilePath;
+		public void* Reserved;
+		public uint LoadOptionsSize;
+		public void* LoadOptions;
+		public void* ImageBase;
+		public ulong ImageSize;
+		public EFI_MEMORY_TYPE ImageCodeType;
+		public EFI_MEMORY_TYPE ImageDataType;
+		public delegate* unmanaged<EFI_HANDLE, ulong> Unload;
+	}
 
-  UINT8 SubType;    ///< Varies by Type
-                    ///< 0xFF End Entire Device Path, or
-                    ///< 0x01 End This Instance of a Device Path and start a new
-                    ///< Device Path.
+	/* TODO: Translate to C#
+	 
+	 typedef
+EFI_STATUS
+(EFIAPI *EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_OPEN_VOLUME)(
+  IN EFI_SIMPLE_FILE_SYSTEM_PROTOCOL    *This,
+  OUT EFI_FILE_PROTOCOL                 **Root
+  );
 
-  UINT8 Length[2];  ///< Specific Device Path data. Type and Sub-Type define
-                    ///< type of data. Size of data is included in Length.
+	struct _EFI_SIMPLE_FILE_SYSTEM_PROTOCOL {
+  ///
+  /// The version of the EFI_SIMPLE_FILE_SYSTEM_PROTOCOL. The version
+  /// specified by this specification is 0x00010000. All future revisions
+  /// must be backwards compatible.
+  ///
+  UINT64                                         Revision;
+  EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_OPEN_VOLUME    OpenVolume;
+};
+	 
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_OPEN)(
+  IN EFI_FILE_PROTOCOL        *This,
+  OUT EFI_FILE_PROTOCOL       **NewHandle,
+  IN CHAR16                   *FileName,
+  IN UINT64                   OpenMode,
+  IN UINT64                   Attributes
+  );
 
-} EFI_DEVICE_PATH_PROTOCOL;
+//
+// Open modes
+//
+#define EFI_FILE_MODE_READ    0x0000000000000001ULL
+#define EFI_FILE_MODE_WRITE   0x0000000000000002ULL
+#define EFI_FILE_MODE_CREATE  0x8000000000000000ULL
+
+//
+// File attributes
+//
+#define EFI_FILE_READ_ONLY   0x0000000000000001ULL
+#define EFI_FILE_HIDDEN      0x0000000000000002ULL
+#define EFI_FILE_SYSTEM      0x0000000000000004ULL
+#define EFI_FILE_RESERVED    0x0000000000000008ULL
+#define EFI_FILE_DIRECTORY   0x0000000000000010ULL
+#define EFI_FILE_ARCHIVE     0x0000000000000020ULL
+#define EFI_FILE_VALID_ATTR  0x0000000000000037ULL
+
+
+typedef
+EFI_STATUS
+(EFIAPI* EFI_FILE_CLOSE)(
+  IN EFI_FILE_PROTOCOL  * This
+  );
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_DELETE)(
+  IN EFI_FILE_PROTOCOL  *This
+  );
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_READ)(
+  IN EFI_FILE_PROTOCOL        *This,
+  IN OUT UINTN                *BufferSize,
+  OUT VOID                    *Buffer
+  );
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_WRITE)(
+  IN EFI_FILE_PROTOCOL        *This,
+  IN OUT UINTN                *BufferSize,
+  IN VOID                     *Buffer
+  );
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_SET_POSITION)(
+  IN EFI_FILE_PROTOCOL        *This,
+  IN UINT64                   Position
+  );
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_GET_POSITION)(
+  IN EFI_FILE_PROTOCOL        *This,
+  OUT UINT64                  *Position
+  );
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_GET_INFO)(
+  IN EFI_FILE_PROTOCOL        *This,
+  IN EFI_GUID                 *InformationType,
+  IN OUT UINTN                *BufferSize,
+  OUT VOID                    *Buffer
+  );
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_SET_INFO)(
+  IN EFI_FILE_PROTOCOL        *This,
+  IN EFI_GUID                 *InformationType,
+  IN UINTN                    BufferSize,
+  IN VOID                     *Buffer
+  );
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_FLUSH)(
+  IN EFI_FILE_PROTOCOL  *This
+  );
 
 	typedef struct {
-		UINT32 Revision;     ///< Defines the revision of the EFI_LOADED_IMAGE_PROTOCOL structure.
-							 ///< All future revisions will be backward compatible to the current revision.
-		EFI_HANDLE ParentHandle; ///< Parent image's image handle. NULL if the image is loaded directly from
-								 ///< the firmware's boot manager.
-		EFI_SYSTEM_TABLE* SystemTable; ///< the image's EFI system table pointer.
+  //
+  // If Event is NULL, then blocking I/O is performed.
+  // If Event is not NULL and non-blocking I/O is supported, then non-blocking I/O is performed,
+  // and Event will be signaled when the read request is completed.
+  // The caller must be prepared to handle the case where the callback associated with Event
+  // occurs before the original asynchronous I/O request call returns.
+  //
+  EFI_EVENT     Event;
 
-		//
-		// Source location of image
-		//
-		EFI_HANDLE DeviceHandle; ///< The device handle that the EFI Image was loaded from.
-		EFI_DEVICE_PATH_PROTOCOL* FilePath;    ///< A pointer to the file path portion specific to DeviceHandle
-											   ///< that the EFI Image was loaded from.
-		VOID* Reserved;    ///< Reserved. DO NOT USE.
+  //
+  // Defines whether or not the signaled event encountered an error.
+  //
+  EFI_STATUS    Status;
 
-		//
-		// Images load options
-		//
-		UINT32 LoadOptionsSize; ///< The size in bytes of LoadOptions.
-		VOID* LoadOptions;    ///< A pointer to the image's binary load options.
+  //
+  // For OpenEx():  Not Used, ignored.
+  // For ReadEx():  On input, the size of the Buffer. On output, the amount of data returned in Buffer.
+  //                In both cases, the size is measured in bytes.
+  // For WriteEx(): On input, the size of the Buffer. On output, the amount of data actually written.
+  //                In both cases, the size is measured in bytes.
+  // For FlushEx(): Not used, ignored.
+  //
+  UINTN    BufferSize;
 
-		//
-		// Location of where image was loaded
-		//
-		VOID* ImageBase;    ///< The base address at which the image was loaded.
-		UINT64 ImageSize;     ///< The size in bytes of the loaded image.
-		EFI_MEMORY_TYPE ImageCodeType; ///< The memory type that the code sections were loaded as.
-		EFI_MEMORY_TYPE ImageDataType; ///< The memory type that the data sections were loaded as.
-		EFI_IMAGE_UNLOAD Unload;
-	}
-	EFI_LOADED_IMAGE_PROTOCOL;
-	*/
+  //
+  // For OpenEx():  Not Used, ignored.
+  // For ReadEx():  The buffer into which the data is read.
+  // For WriteEx(): The buffer of data to write.
+  // For FlushEx(): Not Used, ignored.
+  //
+  VOID     *Buffer;
+} EFI_FILE_IO_TOKEN;
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_OPEN_EX)(
+  IN EFI_FILE_PROTOCOL        *This,
+  OUT EFI_FILE_PROTOCOL       **NewHandle,
+  IN CHAR16                   *FileName,
+  IN UINT64                   OpenMode,
+  IN UINT64                   Attributes,
+  IN OUT EFI_FILE_IO_TOKEN    *Token
+  );
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_READ_EX)(
+  IN EFI_FILE_PROTOCOL        *This,
+  IN OUT EFI_FILE_IO_TOKEN    *Token
+  );
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_WRITE_EX)(
+  IN EFI_FILE_PROTOCOL        *This,
+  IN OUT EFI_FILE_IO_TOKEN    *Token
+  );
+
+	typedef
+EFI_STATUS
+(EFIAPI *EFI_FILE_FLUSH_EX)(
+  IN EFI_FILE_PROTOCOL        *This,
+  IN OUT EFI_FILE_IO_TOKEN    *Token
+  );
+
+	struct _EFI_FILE_PROTOCOL {
+  ///
+  /// The version of the EFI_FILE_PROTOCOL interface. The version specified
+  /// by this specification is EFI_FILE_PROTOCOL_LATEST_REVISION.
+  /// Future versions are required to be backward compatible to version 1.0.
+  ///
+  UINT64                   Revision;
+  EFI_FILE_OPEN            Open;
+  EFI_FILE_CLOSE           Close;
+  EFI_FILE_DELETE          Delete;
+  EFI_FILE_READ            Read;
+  EFI_FILE_WRITE           Write;
+  EFI_FILE_GET_POSITION    GetPosition;
+  EFI_FILE_SET_POSITION    SetPosition;
+  EFI_FILE_GET_INFO        GetInfo;
+  EFI_FILE_SET_INFO        SetInfo;
+  EFI_FILE_FLUSH           Flush;
+  EFI_FILE_OPEN_EX         OpenEx;
+  EFI_FILE_READ_EX         ReadEx;
+  EFI_FILE_WRITE_EX        WriteEx;
+  EFI_FILE_FLUSH_EX        FlushEx;
+};
+	 */
 
 	[StructLayout(LayoutKind.Sequential)]
 	public unsafe readonly struct EFI_BOOT_SERVICES
