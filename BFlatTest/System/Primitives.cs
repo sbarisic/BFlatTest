@@ -82,6 +82,7 @@ namespace System
             return Utils.NumToDecString((long)this);
         }
     }
+
     public struct Int64
     {
         public const long MaxValue = 0x7fffffffffffffffL;
@@ -92,6 +93,7 @@ namespace System
             return Utils.NumToDecString((long)this);
         }
     }
+
     public struct UInt64
     {
         public override string ToString()
@@ -99,11 +101,27 @@ namespace System
             return Utils.NumToDecString((long)this);
         }
     }
+
     public struct IntPtr
     {
         public static readonly IntPtr Zero = new IntPtr();
+
+        public override string ToString()
+        {
+            return Utils.PtrToHexString((nint)this);
+        }
     }
-    public struct UIntPtr { }
+
+    public struct UIntPtr
+    {
+        public static readonly UIntPtr Zero = new UIntPtr();
+
+        public override string ToString()
+        {
+            return Utils.PtrToHexString((nint)this);
+        }
+    }
+
     public struct Single { }
     public struct Double { }
 }

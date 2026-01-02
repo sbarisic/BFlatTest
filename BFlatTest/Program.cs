@@ -61,9 +61,38 @@ public unsafe static class Program
         return 0;
     }
 
-    static void Test()
+
+
+    //public static TestStruct TS;
+
+    /*static ref TestStruct GetTS()
     {
-        Console.WriteLine("Test!");
+        return ref TS;
+    }*/
+
+    static TestStruct TS = new TestStruct();
+
+    unsafe static void Test()
+    {
+        fixed (TestStruct* TSp = &TS)
+            Console.Print("TS @ ", (nuint)(TSp));
+
+        TS = new TestStruct();
+        TS.Str = "Test String 1";
+        TS.Num = 25;
+        Console.WriteLine(TS.Str);
+
+        ref TestStruct TS2 = ref TS;
+        TS2.Str = "Some other string";
+
+        Console.WriteLine(TS.Str);
+        Console.WriteLine("Done!");
     }
+}
+
+public struct TestStruct
+{
+    public string Str;
+    public int Num;
 }
 
