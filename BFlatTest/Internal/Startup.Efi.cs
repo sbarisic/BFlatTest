@@ -46,7 +46,8 @@ namespace Internal.Runtime.CompilerHelpers
 
 			ManagedMain();
 
-			while (true) ;
+			while (true) 
+				Environment.Stall(1000);
 		}
 
 		internal static unsafe void InitializeCommandLineArgsW(int argc, char** argv)
@@ -582,8 +583,8 @@ namespace Internal.Runtime.CompilerHelpers
 	{
 		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, nuint*, nuint*, ulong> GetNumberOfProcessors;
 		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, nuint*, EFI_PROCESSOR_INFORMATION*, ulong> GetProcessorInfo;
-		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, EFI_AP_PROCEDURE, byte, EFI_EVENT, nuint, void*, nuint**, ulong> StartupAllAPs;
-		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, EFI_AP_PROCEDURE, nuint, EFI_EVENT, nuint, void*, byte*, ulong> StartupThisAP;
+		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, delegate* unmanaged<void*, EFI_STATUS>, byte, EFI_EVENT, nuint, void*, nuint**, ulong> StartupAllAPs;
+		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, delegate* unmanaged<void*, EFI_STATUS>, nuint, EFI_EVENT, nuint, void*, byte*, ulong> StartupThisAP;
 		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, nuint, byte, ulong> SwitchBSP;
 		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, nuint, byte, uint*, ulong> EnableDisableAP;
 		public readonly delegate* unmanaged<EFI_MP_SERVICES_PROTOCOL*, nuint*, ulong> WhoAmI;

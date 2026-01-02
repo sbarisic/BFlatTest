@@ -64,6 +64,11 @@ namespace System
 				return milliseconds;
 			}
 		}
+
+		public static unsafe void Stall(int microseconds)
+		{
+			EfiSystemTable->BootServices->Stall((nuint)microseconds);
+		}
 	}
 }
 

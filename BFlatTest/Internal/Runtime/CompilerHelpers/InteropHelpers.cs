@@ -20,21 +20,21 @@ using System.Runtime.InteropServices;
 
 namespace Internal.Runtime.CompilerHelpers
 {
-    internal unsafe static class InteropHelpers
-    {
-        private static IntPtr ResolvePInvoke(MethodFixupCell* pCell)
-        {
-            if (pCell->Target != default)
-                return pCell->Target;
+	internal unsafe static class InteropHelpers
+	{
+		private static IntPtr ResolvePInvoke(MethodFixupCell* pCell)
+		{
+			if (pCell->Target != default)
+				return pCell->Target;
 
-            return ResolvePInvokeSlow(pCell);
-        }
+			return ResolvePInvokeSlow(pCell);
+		}
 
-        private static IntPtr ResolvePInvokeSlow(MethodFixupCell* pCell)
-        {
-            ModuleFixupCell* pModuleCell = pCell->Module;
-            if (pModuleCell->Handle == default)
-            {
+		private static IntPtr ResolvePInvokeSlow(MethodFixupCell* pCell)
+		{
+			ModuleFixupCell* pModuleCell = pCell->Module;
+			if (pModuleCell->Handle == default)
+			{
 #if WINDOWS
                 pModuleCell->Handle = LoadLibraryA(pModuleCell->ModuleName);
 
@@ -46,9 +46,9 @@ namespace Internal.Runtime.CompilerHelpers
                 [DllImport("libSystem.Native"), SuppressGCTransition]
                 extern static IntPtr SystemNative_LoadLibrary(IntPtr name);
 #endif
-                if (pModuleCell->Handle == default)
-                    Environment.FailFast(null);
-            }
+				if (pModuleCell->Handle == default)
+					Environment.FailFast(null);
+			}
 
 #if WINDOWS
             pCell->Target = GetProcAddress(pModuleCell->Handle, pCell->MethodName);
@@ -62,40 +62,42 @@ namespace Internal.Runtime.CompilerHelpers
             extern static IntPtr SystemNative_GetProcAddress(IntPtr hModule, IntPtr name);
 #endif
 
-            if (pCell->Target == default)
-                Environment.FailFast(null);
+			if (pCell->Target == default)
+				Environment.FailFast(null);
 
-            return pCell->Target;
-        }
+			return pCell->Target;
+		}
 
 		public static IntPtr GetCurrentCalleeOpenStaticDelegateFunctionPointer()
 		{
+			Console.WriteLine("GetCurrentCalleeOpenStaticDelegateFunctionPointer");
 			return 0;
 		}
 
 		public static object GetCurrentCalleeDelegate<T>()
 		{
-			// temporary unblocker
+			// temporary unblocker	
+			// Console.WriteLine("GetCurrentCalleeDelegate");
 			return null!;
 		}
 
 
 		[StructLayout(LayoutKind.Sequential)]
-        internal struct ModuleFixupCell
-        {
-            public IntPtr Handle;
-            public IntPtr ModuleName;
-            public IntPtr CallingAssemblyType;
-            public uint DllImportSearchPathAndCookie;
-        }
+		internal struct ModuleFixupCell
+		{
+			public IntPtr Handle;
+			public IntPtr ModuleName;
+			public IntPtr CallingAssemblyType;
+			public uint DllImportSearchPathAndCookie;
+		}
 
-        [StructLayout(LayoutKind.Sequential)]
-        internal struct MethodFixupCell
-        {
-            public IntPtr Target;
-            public IntPtr MethodName;
-            public ModuleFixupCell* Module;
-            private int Flags;
-        }
-    }
+		[StructLayout(LayoutKind.Sequential)]
+		internal struct MethodFixupCell
+		{
+			public IntPtr Target;
+			public IntPtr MethodName;
+			public ModuleFixupCell* Module;
+			private int Flags;
+		}
+	}
 }

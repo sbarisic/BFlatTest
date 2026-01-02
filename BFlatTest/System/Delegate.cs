@@ -14,40 +14,42 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using System.Runtime.InteropServices;
+
 namespace System
 {
-    public abstract class Delegate
-    {
-        internal object m_firstParameter;
-        internal object m_helperObject;
-        internal nint m_extraFunctionPointerOrData;
-        internal IntPtr m_functionPointer;
+	public abstract class Delegate
+	{
+		public object m_firstParameter;
+		public object m_helperObject;
+		public nint m_extraFunctionPointerOrData;
+		public IntPtr m_functionPointer;
 
-        private void InitializeClosedStaticThunk(object firstParameter, IntPtr functionPointer, IntPtr functionPointerThunk)
-        {
-            m_extraFunctionPointerOrData = functionPointer;
-            m_helperObject = firstParameter;
-            m_functionPointer = functionPointerThunk;
-            m_firstParameter = this;
-        }
+		private void InitializeClosedStaticThunk(object firstParameter, IntPtr functionPointer, IntPtr functionPointerThunk)
+		{
+			m_extraFunctionPointerOrData = functionPointer;
+			m_helperObject = firstParameter;
+			m_functionPointer = functionPointerThunk;
+			m_firstParameter = this;
+		}
 
-        private void InitializeOpenStaticThunk(object firstParameter, IntPtr functionPointer, IntPtr functionPointerThunk)
-        {
-            m_firstParameter = this;
-            m_functionPointer = functionPointerThunk;
-            m_extraFunctionPointerOrData = functionPointer;
-        }
+		private void InitializeOpenStaticThunk(object firstParameter, IntPtr functionPointer, IntPtr functionPointerThunk)
+		{
+			m_firstParameter = this;
+			m_functionPointer = functionPointerThunk;
+			m_extraFunctionPointerOrData = functionPointer;
+		}
 
-        private void InitializeClosedInstance(object firstParameter, IntPtr functionPointer)
-        {
-            m_functionPointer = functionPointer;
-            m_firstParameter = firstParameter;
-        }
-    }
+		private void InitializeClosedInstance(object firstParameter, IntPtr functionPointer)
+		{
+			m_functionPointer = functionPointer;
+			m_firstParameter = firstParameter;
+		}
+	}
 
-    public abstract class MulticastDelegate : Delegate { }
+	public abstract class MulticastDelegate : Delegate { }
 
-    public delegate void Action();
+	public delegate void Action();
 
-    public unsafe delegate void Func1(void* arg1);
+	public unsafe delegate void Func1(void* arg1);
 }

@@ -1,18 +1,28 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 
 namespace System.Runtime.InteropServices
 {
 	public unsafe static class Marshal
 	{
-		public static IntPtr GetFunctionPointerForDelegate(Delegate d)
+		public static void* GetFunctionPointerForDelegate(Delegate d)
 		{
-			return (IntPtr)d.m_functionPointer;
+			Console.Print("GetFunctionPointerForDelegate - ", Utils.PtrToHexString(d.m_functionPointer));
+			return (void*)d.m_functionPointer;
 		}
 
-		public static IntPtr GetFunctionPointerForDelegate<TDelegate>(TDelegate d)
+		public static void* GetFunctionPointerForDelegate<TDelegate>(TDelegate d) where TDelegate : Delegate
 		{
-			return (IntPtr)(d as Delegate).m_functionPointer;
+			Console.WriteLine("GetFunctionPointerForDelegate<TDelegate>");
+
+			void* vptr = Unsafe.AsPointer(ref d);
+			//Console.Print("AsPointer - ", Utils.PtrToHexString((nint)vptr));
+			//Console.Print("GetFunctionPointerForDelegate - ", Utils.PtrToHexString(d.m_functionPointer));
+			//return (IntPtr)d.m_functionPointer;
+			//return (IntPtr)vptr;
+
+			return (void*)d.m_functionPointer;
 		}
 	}
 }

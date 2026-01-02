@@ -7,6 +7,27 @@ using Fish;
 using System.IO;
 using Internal.Runtime;
 
+
+unsafe class Kernel
+{
+	public CoreTask CoreTask;
+
+	public EFI_STATUS Main(void* p)
+	{
+		Environment.Stall(1000000);
+
+		Console.WriteLine("TestClass.Test()");
+		Console.WriteLine("Other test");
+
+		while (true)
+		{
+			Environment.Stall(1000);
+		}
+
+		return new EFI_STATUS(0);
+	}
+}
+
 public unsafe static class Program
 {
 	static string ToStr(nint ptr)
@@ -38,14 +59,29 @@ public unsafe static class Program
 		}
 
 
+
 		//FB.Init(1920, 1080);
 		FB.Init(1280, 720);
 		Console.WriteLine();
 		//Test();
 		//Console.WriteLine();
 
-		CoreTask CT = new CoreTask(EfiSystemTable->BootServices);
-		CT.RunOnCore(Proc2, 1);
+		Console.WriteLine("Creating Kernel");
+		Kernel Krn = new Kernel();
+		Krn.CoreTask = new CoreTask(EfiSystemTable->BootServices);
+		EFI_AP_PROCEDURE app = new EFI_AP_PROCEDURE(Krn.Main);
+
+
+		int CurProcNum = Krn.CoreTask.GetCurrentProcessorNumber();
+		Console.Print("Running on proc ", CurProcNum.ToString());
+
+		Console.WriteLine("Spawning threads");
+		Krn.CoreTask.RunOnCore(app, CurProcNum + 1);
+
+		Console.WriteLine("Done!");
+
+		//CoreTask CT = new CoreTask(EfiSystemTable->BootServices);
+		//CT.RunOnCore(Proc2, 1);
 
 
 		/*FishGL.DrawColor = new Color(255, 0, 0);
@@ -70,16 +106,11 @@ public unsafe static class Program
         return ref TS;
     }*/
 
-	static EFI_STATUS Proc2(void* arg1)
+	public static EFI_STATUS Tsk1(void* Arg)
 	{
-		Console.WriteLine("Hello from Proc2");
-
-		while (true)
-			;
-
+		Console.WriteLine("Hello from Another Core!");
 		return new EFI_STATUS(0);
 	}
-
 
 	unsafe static void Test()
 	{

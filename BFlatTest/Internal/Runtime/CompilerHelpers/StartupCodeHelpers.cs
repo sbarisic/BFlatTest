@@ -118,7 +118,14 @@ namespace Internal.Runtime.CompilerHelpers
 			*dst = r;
 		}
 
-		[RuntimeExport("RhpByRefAssignRef")]
+		[RuntimeExport("RhpCreateManagedDelegate")]
+		public static unsafe Delegate RhpCreateManagedDelegate(IntPtr funcPtr, IntPtr thunkPtr, object firstParam)
+		{
+			Console.WriteLine("RhpCreateManagedDelegate");
+			return null;
+		}
+
+			[RuntimeExport("RhpByRefAssignRef")]
 		public static unsafe void RhpByRefAssignRef(void** dst, void** src)
 		{
 			void* obj = *src;      // load reference from source slot

@@ -29,17 +29,17 @@ namespace Fish
 			nuint numEnabled = 0;
 			mpServices->GetNumberOfProcessors(mpServices, &numProc, &numEnabled);
 
-			Console.Print("NumProc = ", numProc, ", NumEnabled = ", numEnabled);
+			//Console.Print("NumProc = ", numProc, ", NumEnabled = ", numEnabled);
 			NumProc = (int)numProc;
 
-			Console.Write("EnableDisableAP - ");
+			/*Console.Write("EnableDisableAP - ");
 			ulong res = mpServices->EnableDisableAP(mpServices, 1, 0, null);
 			Console.WriteLine(Utils.PtrToHexString((nint)res));
 
 			mpServices->GetNumberOfProcessors(mpServices, &numProc, &numEnabled);
 
 			Console.Print("NumProc = ", numProc, ", NumEnabled = ", numEnabled);
-			NumProc = (int)numProc;
+			NumProc = (int)numProc;*/
 		}
 
 		public void RunOnCore(EFI_AP_PROCEDURE A, int ProcNum)
@@ -48,20 +48,34 @@ namespace Fish
 			TPL_NOTIFY._tpl = 16;
 
 			EFI_EVENT Evt = new EFI_EVENT();
-			Console.Write("CreateEvent - ");
 			ulong res = bs->CreateEvent(0, TPL_NOTIFY, null, null, &Evt);
-			Console.WriteLine(Utils.PtrToHexString((nint)res));
+			if (res != 0)
+				return;
 
-			Console.Write("EnableDisableAP - ");
+			//Console.Write("EnableDisableAP - ");
 			res = mpServices->EnableDisableAP(mpServices, (nuint)ProcNum, 0x1, null);
-			Console.WriteLine(Utils.PtrToHexString((nint)res));
+			//Console.WriteLine(Utils.PtrToHexString((nint)res));
+
+			if (res != 0)
+				return;
 
 
-			Console.Write("StartupThisAP - ");
-			EFI_EVENT null_evt = new EFI_EVENT();
-			null_evt._event = 0;
-			res = mpServices->StartupThisAP(mpServices, A, (nuint)ProcNum, null_evt, 0, null, null);
-			Console.WriteLine(Utils.PtrToHexString((nint)res));
+			//Console.Write("StartupThisAP - ");
+			res = mpServices->StartupThisAP(mpServices, (delegate* unmanaged<void*, EFI_STATUS>)A.m_functionPointer, (nuint)ProcNum, Evt, 0, mpServices, null);
+
+			//bs->Stall(500);
+			//Console.WriteLine(Utils.PtrToHexString((nint)res));
+		}
+
+		public int GetCurrentProcessorNumber()
+		{
+			nuint procNum = 0;
+			ulong res = mpServices->WhoAmI(mpServices, &procNum);
+
+			if (res != 0)
+				return -1;
+
+			return (int)procNum;
 		}
 	}
 }
