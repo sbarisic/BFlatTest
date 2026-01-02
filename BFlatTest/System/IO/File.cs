@@ -1,5 +1,6 @@
 ﻿using Internal.Runtime.CompilerHelpers;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace System.IO
 {
@@ -21,16 +22,35 @@ namespace System.IO
 			EFI_HANDLE nullHandle = new EFI_HANDLE(IntPtr.Zero);
 			bootServices->OpenProtocol(fsHandle, &sfsguid, (void**)&fs, imageHandle, nullHandle, EFI_OPEN_PROTOCOL.BY_HANDLE_PROTOCOL);
 
+			if (fs == null)
+			{
+				Console.WriteLine("fs is NULL");
+				return null;
+			}
+
 			// 2. Open the root volume
 			EFI_FILE_PROTOCOL* root;
 			fs->OpenVolume(fs, &root);
 
+			if (root == null)
+			{
+				Console.WriteLine("root is NULL");
+				return null;
+			}
+
 			// 3. Open the file
 			EFI_FILE_PROTOCOL* file;
+			Console.Print("Opening ", path);
 
 			fixed (char* pathPtr = path)
 			{
-				root->Open(root, &file, pathPtr, EFI_FILE_MODE_READ, 0);
+				root->Open(root, &file, pathPtr, (ulong)EFI_FILE_MODE.READ, 0);
+			}
+
+			if (file == null)
+			{
+				Console.WriteLine("file is NULL");
+				return null;
 			}
 
 			// 4. Get file size
@@ -40,8 +60,9 @@ namespace System.IO
 
 			file->GetInfo(file, &fileInfoGUID, (nuint*)&infoSize, null); // first call gets required size
 			bootServices->AllocatePool(EFI_MEMORY_TYPE.EfiLoaderData, (nuint)infoSize, (void**)&info);
+
 			file->GetInfo(file, &fileInfoGUID, (nuint*)&infoSize, info);
-			fileSize = info->FileSize;
+			fileSize = (nuint)info->FileSize;
 
 			// 5. Allocate buffer
 			byte* buffer = null;
@@ -63,6 +84,26 @@ namespace System.IO
 			bootServices->FreePool(buffer);
 
 			return byteArr;
+		}
+
+		public static string ReadAllText(string path)
+		{
+			byte[] rawBytes = ReadAllBytes(path);
+
+			if (rawBytes == null)
+				return null;
+
+			string str = "";
+			char* rawChars = stackalloc char[rawBytes.Length];
+
+			for (int i = 0; i < rawBytes.Length; i++)
+			{
+				rawChars[i] = (char)rawBytes[i];
+			}
+
+			str = new string(rawChars);
+
+			return str;
 		}
 	}
 }

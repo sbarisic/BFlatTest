@@ -104,9 +104,16 @@ namespace Kernel
 
 			Console.WriteLine("Hello Worlde!");
 
-			byte[] imgBytes = File.ReadAllBytes("img.bin");
+			string fileText = File.ReadAllText("img.bin");
 
-			Console.WriteLine("File read!");
+			if (fileText == null)
+				Console.WriteLine("fileText is NULL");
+			else
+			{
+				Console.Print("File read! ", fileText.Length, " chars");
+
+				Console.WriteLine(fileText);
+			}
 		}
 
 		public void SwapBuffer()

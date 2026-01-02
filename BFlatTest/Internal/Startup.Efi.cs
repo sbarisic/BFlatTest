@@ -320,23 +320,6 @@ namespace Internal.Runtime.CompilerHelpers
 		public delegate* unmanaged<EFI_HANDLE, ulong> Unload;
 	}
 
-	public static class EFI_FILE_MODE
-	{
-		public const ulong READ = 0x0000000000000001UL;
-		public const ulong WRITE = 0x0000000000000002UL;
-		public const ulong CREATE = 0x8000000000000000UL;
-	}
-
-	public static class EFI_FILE_ATTRIBUTE
-	{
-		public const ulong READ_ONLY = 0x0000000000000001UL;
-		public const ulong HIDDEN = 0x0000000000000002UL;
-		public const ulong SYSTEM = 0x0000000000000004UL;
-		public const ulong RESERVED = 0x0000000000000008UL;
-		public const ulong DIRECTORY = 0x0000000000000010UL;
-		public const ulong ARCHIVE = 0x0000000000000020UL;
-		public const ulong VALID_ATTR = 0x0000000000000037UL;
-	}
 
 	[StructLayout(LayoutKind.Sequential)]
 	public struct EFI_FILE_IO_TOKEN
@@ -374,59 +357,36 @@ namespace Internal.Runtime.CompilerHelpers
 		public readonly delegate* unmanaged<EFI_SIMPLE_FILE_SYSTEM_PROTOCOL*, EFI_FILE_PROTOCOL**, ulong> OpenVolume;
 	}
 
-	/* // TODO: Translate to C#
-	 
-	typedef struct {
-  UINT16  Year;
-  UINT8   Month;
-  UINT8   Day;
-  UINT8   Hour;
-  UINT8   Minute;
-  UINT8   Second;
-  UINT8   Pad1;
-  UINT32  Nanosecond;
-  INT16   TimeZone;
-  UINT8   Daylight;
-  UINT8   Pad2;
-} EFI_TIME;
+	[StructLayout(LayoutKind.Sequential)]
+	public struct EFI_FILE_INFO
+	{
+		public ulong Size;
+		public ulong FileSize;
+		public ulong PhysicalSize;
+		public EFI_TIME CreateTime;
+		public EFI_TIME LastAccessTime;
+		public EFI_TIME ModificationTime;
+		public ulong Attribute;
+		public unsafe fixed char FileName[1];
+	}
 
-	 typedef struct {
-  ///
-  /// The size of the EFI_FILE_INFO structure, including the Null-terminated FileName string.
-  ///
-  UINT64      Size;
-  ///
-  /// The size of the file in bytes.
-  ///
-  UINT64      FileSize;
-  ///
-  /// PhysicalSize The amount of physical space the file consumes on the file system volume.
-  ///
-  UINT64      PhysicalSize;
-  ///
-  /// The time the file was created.
-  ///
-  EFI_TIME    CreateTime;
-  ///
-  /// The time when the file was last accessed.
-  ///
-  EFI_TIME    LastAccessTime;
-  ///
-  /// The time when the file's contents were last modified.
-  ///
-  EFI_TIME    ModificationTime;
-  ///
-  /// The attribute bits for the file.
-  ///
-  UINT64      Attribute;
-  ///
-  /// The Null-terminated name of the file.
-  /// For a root directory, the name is an empty string.
-  ///
-  CHAR16      FileName[1];
-} EFI_FILE_INFO;
+	public enum EFI_FILE_MODE : ulong
+	{
+		READ = 0x0000000000000001,
+		WRITE = 0x0000000000000002,
+		CREATE = 0x8000000000000000
+	}
 
-	 */
+	public enum EFI_FILE_ATTRIBUTE : ulong
+	{
+		READ_ONLY = 0x0000000000000001,
+		HIDDEN = 0x0000000000000002,
+		SYSTEM = 0x0000000000000004,
+		RESERVED = 0x0000000000000008,
+		DIRECTORY = 0x0000000000000010,
+		ARCHIVE = 0x0000000000000020,
+		VALID_ATTR = 0x0000000000000037
+	}
 
 	[StructLayout(LayoutKind.Sequential)]
 	public unsafe readonly struct EFI_BOOT_SERVICES
@@ -494,7 +454,7 @@ namespace Internal.Runtime.CompilerHelpers
 		PixelBlueGreenRedReserved8BitPerColor,
 		PixelBitMask,
 		PixelBltOnly,
-		PixelFormatMax
+		EfiGraphicsOutputBltOperationMax
 	}
 
 	[StructLayout(LayoutKind.Sequential)]

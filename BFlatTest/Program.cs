@@ -81,7 +81,7 @@ public unsafe static class Program
 			FishGL.DrawColor = new Color(0, 0, 255);
 			FishGL.Rect(140, 140, 100, 100);
 
-			FB.SwapBuffer();
+			//FB.SwapBuffer();
 			Console.WriteLine("Rectangles drawn!");
 		}
 

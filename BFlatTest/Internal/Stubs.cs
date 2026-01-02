@@ -72,6 +72,8 @@ namespace Internal.Runtime.CompilerHelpers
 
 		public static void ThrowInvalidProgramException() => Environment.FailFast(null);
 
+		public static void ThrowOverflowException() => Environment.FailFast(null);
+
 		public static void ThrowInvalidProgramExceptionWithArgument(object id, string methodName) => Environment.FailFast(null);
 	}
 
