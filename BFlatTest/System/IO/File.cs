@@ -10,6 +10,22 @@ namespace System.IO
 		public static EFI_HANDLE imageHandle;
 		public static EFI_HANDLE deviceHandle;
 
+		public static void EfiInit(EFI_HANDLE imageHandle, EFI_SYSTEM_TABLE* systemTable)
+		{
+            File.bootServices = systemTable->BootServices;
+            File.imageHandle = imageHandle;
+
+            EFI_GUID efiLoadedImageProtocolGUID = new EFI_GUID(
+                0x5B1B31A1,
+                0x9562,
+                0x11D2,
+                0x8E, 0x3F, 0x00, 0xA0, 0xC9, 0x69, 0x72, 0x3B
+            );
+            EFI_LOADED_IMAGE_PROTOCOL* LoadedImage = null;
+            systemTable->BootServices->HandleProtocol(imageHandle, &efiLoadedImageProtocolGUID, (void**)&LoadedImage);
+            File.deviceHandle = LoadedImage->DeviceHandle;
+        }
+
 		public static byte[] ReadAllBytes(string path)
 		{
 			nuint fileSize = 0;
@@ -102,6 +118,7 @@ namespace System.IO
 			}
 
 			str = new string(rawChars);
+
 
 			return str;
 		}

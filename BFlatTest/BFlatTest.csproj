@@ -1,26 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<OutputType>Exe</OutputType>
+		<OutputType>Library</OutputType>
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>disable</ImplicitUsings>
-		<Nullable>enable</Nullable>
+		<Nullable>disable</Nullable>
 		<AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+		<NoStdLib>True</NoStdLib>
+		<DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
+		<DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+		<ImplicitUsings>disable</ImplicitUsings>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<DefineConstants>$(DefineConstants);UEFI</DefineConstants>
+		<DefineConstants>$(DefineConstants);UEFI</DefineConstants>		
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<DefineConstants>$(DefineConstants);UEFI</DefineConstants>
 	</PropertyGroup>
-	<PropertyGroup>
-		<DisableImplicitNamespaceImports>true</DisableImplicitNamespaceImports>
-	</PropertyGroup>
-	<PropertyGroup>
-		<ImplicitUsings>disable</ImplicitUsings>
-	</PropertyGroup>
+	
 	<ItemGroup>
 		<Folder Include="System\Collections\" />
 		<Folder Include="System\Linq\" />
